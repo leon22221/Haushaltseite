@@ -11,7 +11,7 @@
       color: #333;
     }
     header {
-      background: #4CAF50;
+      background: #E53935; /* Rot */
       color: white;
       padding: 15px;
       text-align: center;
@@ -19,7 +19,7 @@
     nav {
       display: flex;
       justify-content: center;
-      background: #388E3C;
+      background: #C62828; /* Dunkleres Rot */
     }
     nav button {
       background: none;
@@ -30,7 +30,7 @@
       font-size: 16px;
     }
     nav button:hover {
-      background: #2E7D32;
+      background: #B71C1C; /* Noch dunkleres Rot */
     }
     main {
       padding: 20px;
@@ -61,7 +61,7 @@
       border-radius: 5px;
     }
     button {
-      background: #4CAF50;
+      background: #E53935; /* Rot */
       color: white;
       border: none;
       padding: 8px 12px;
@@ -69,7 +69,7 @@
       cursor: pointer;
     }
     button:hover {
-      background: #45A049;
+      background: #C62828; /* Dunkleres Rot */
     }
     #rezepteSuche {
       margin-bottom: 10px;
@@ -107,7 +107,7 @@
         <input type="text" id="neuName" placeholder="Name">
         <input type="text" id="neuKategorie" placeholder="Kategorie">
         <textarea id="neuZutaten" placeholder="Zutaten (mit Komma trennen)"></textarea>
-        <input type="text" id="neuLink" placeholder="Link zum Rezept">
+        <input type="text" id="neuLink" placeholder="(Optional: Link zum Rezept)">
         <button onclick="addRezept()">Speichern</button>
       </div>
     </section>
@@ -128,22 +128,19 @@
         id: 1,
         name: "Spaghetti Bolognese",
         kategorie: "Hauptgericht",
-        zutaten: ["500g Spaghetti", "300g Hackfleisch", "400g Tomaten"],
-        link: "https://beispiel.de/spaghetti"
+        zutaten: ["500g Spaghetti", "300g Hackfleisch", "400g Tomaten"]
       },
       {
         id: 2,
         name: "Pfannkuchen",
         kategorie: "Dessert",
-        zutaten: ["250g Mehl", "500ml Milch", "3 Eier"],
-        link: "https://beispiel.de/pfannkuchen"
+        zutaten: ["250g Mehl", "500ml Milch", "3 Eier"]
       },
       {
         id: 3,
         name: "Gemüsesuppe",
         kategorie: "Suppe",
-        zutaten: ["2 Karotten", "1 Zwiebel", "1L Gemüsebrühe", "1 Kartoffel"],
-        link: "https://beispiel.de/gemuesesuppe"
+        zutaten: ["2 Karotten", "1 Zwiebel", "1L Gemüsebrühe", "1 Kartoffel"]
       }
     ];
 
@@ -167,7 +164,6 @@
         <h3>${r.name}</h3>
         <p>Kategorie: ${r.kategorie}</p>
         <ul>${r.zutaten.map(z => `<li>${z}</li>`).join("")}</ul>
-        <a href="${r.link}" target="_blank">Zum Rezept</a><br>
         <button onclick="addToList(${zufall})">Zur Einkaufsliste hinzufügen</button>
       `;
     }
@@ -221,7 +217,6 @@
             <h3>${r.name}</h3>
             <p>Kategorie: ${r.kategorie}</p>
             <ul>${r.zutaten.map(z => `<li>${z}</li>`).join("")}</ul>
-            <a href="${r.link}" target="_blank">Zum Rezept</a><br>
             <button onclick="addToList(${idx})">Zur Einkaufsliste hinzufügen</button>
           `;
           liste.appendChild(div);
@@ -238,14 +233,12 @@
       const name = document.getElementById("neuName").value.trim();
       const kat = document.getElementById("neuKategorie").value.trim();
       const zutaten = document.getElementById("neuZutaten").value.split(",").map(z => z.trim());
-      const link = document.getElementById("neuLink").value.trim();
       if (name && kat && zutaten.length > 0) {
         rezepte.push({
           id: rezepte.length+1,
           name,
           kategorie: kat,
-          zutaten,
-          link
+          zutaten
         });
         alert("Rezept gespeichert!");
         document.getElementById("neuName").value = "";
