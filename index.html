@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Digitales Rezeptebuch</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .rezept { border: 1px solid #ccc; padding: 10px; margin-bottom: 15px; }
+    button { margin-top: 10px; }
+    #einkaufsliste { margin-top: 30px; padding: 10px; background: #f9f9f9; }
+    .zutaten-item { display: flex; justify-content: space-between; margin: 5px 0; }
+    .zutaten-item button { margin-left: 10px; }
+    #manuell { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Willkommen im digitalen Rezeptebuch</h1>
+  
+  <h2>Zufälliges Rezept</h2>
+  <div id="zufallsrezept"></div>
+  <button onclick="zeigeZufallsrezept()">Zufälliges Rezept anzeigen</button>
+  
+  <h2>Einkaufsliste</h2>
+  <div id="einkaufsliste"></div>
+
+  <div id="manuell">
+    <input type="text" id="manuelleZutat" placeholder="Neue Zutat eingeben">
+    <button onclick="addManuell()">Hinzufügen</button>
+  </div>
+
+  <script>
+    const rezepte = [
+      {
+        id: 1,
+        name: "Spaghetti Bolognese",
+        kategorie: "Hauptgericht",
+        zutaten: ["500g Spaghetti", "300g Hackfleisch", "400g Tomaten"],
+        link: "https://beispiel.de/spaghetti"
+      },
+      {
+        id: 2,
+        name: "Pfannkuchen",
+        kategorie: "Dessert",
+        zutaten: ["250g Mehl", "500ml Milch", "3 Eier"],
+        link: "https://beispiel.de/pfannkuchen"
+      },
+      {
+        id: 3,
+        name: "Gemüsesuppe",
+        kategorie: "Suppe",
+        zutaten: ["2 Karotten", "1 Zwiebel", "1L Gemüsebrühe", "1 Kartoffel"],
+        link: "https://beispiel.de/gemuesesuppe"
+      }
+    ];
+
+    let einkaufsliste = [];
+
+    function zeigeZufallsrezept() {
+      const zufall = Math.floor(Math.random() * rezepte.length);
+      const r = rezepte[zufall];
+      const container = document.getElementById("zufallsrezept");
+      container.innerHTML = `
+        <div class="rezept">
+          <h3>${r.name}</h3>
+          <p>Kategorie: ${r.kategorie}</p>
+          <ul>${r.zutaten.map(z => `<li>${z}</li>`).join("")}</ul>
+          <a href="${r.link}" target="_blank">Zum Rezept</a><br>
+          <button onclick="addToList(${zufall})">Zur Einkaufsliste hinzufügen</button>
+        </div>
+      `;
+    }
+
+    function addToList(index) {
+      einkaufsliste.push(...rezepte[index].zutaten);
+      renderListe();
+    }
+
+    function addManuell() {
+      const input = document.getElementById("manuelleZutat");
+      const wert = input.value.trim();
+      if (wert !== "") {
+        einkaufsliste.push(wert);
+        input.value = "";
+        renderListe();
+      }
+    }
+
+    function removeFromList(index) {
+      einkaufsliste.splice(index, 1);
+      renderListe();
+    }
+
+    function renderListe() {
+      const div = document.getElementById("einkaufsliste");
+      div.innerHTML = "";
+      einkaufsliste.forEach((z, i) => {
+        const item = document.createElement("div");
+        item.className = "zutaten-item";
+        item.innerHTML = `
+          <span>${z}</span>
+          <button onclick="removeFromList(${i})">Entfernen</button>
+        `;
+        div.appendChild(item);
+      });
+    }
+  </script>
+</body>
+</html>
