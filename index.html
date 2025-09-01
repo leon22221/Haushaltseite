@@ -230,26 +230,33 @@
 
     // Rezept hinzufügen
     function addRezept() {
-      const name = document.getElementById("neuName").value.trim();
-      const kat = document.getElementById("neuKategorie").value.trim();
-      const zutaten = document.getElementById("neuZutaten").value.split(",").map(z => z.trim());
-      if (name && kat && zutaten.length > 0) {
-        rezepte.push({
-          id: rezepte.length+1,
-          name,
-          kategorie: kat,
-          zutaten
-        });
-        alert("Rezept gespeichert!");
-        document.getElementById("neuName").value = "";
-        document.getElementById("neuKategorie").value = "";
-        document.getElementById("neuZutaten").value = "";
-        document.getElementById("neuLink").value = "";
-        zeigeSeite("rezepte");
-      } else {
-        alert("Bitte alle Felder ausfüllen!");
-      }
-    }
+  const passwort = prompt("Bitte Passwort eingeben, um ein neues Rezept hinzuzufügen:");
+  if (passwort !== "leon2005") {
+    alert("Falsches Passwort! Zugriff verweigert.");
+    return;
+  }
+
+  const name = document.getElementById("neuName").value.trim();
+  const kat = document.getElementById("neuKategorie").value.trim();
+  const zutaten = document.getElementById("neuZutaten").value.split(",").map(z => z.trim());
+  if (name && kat && zutaten.length > 0) {
+    rezepte.push({
+      id: rezepte.length + 1,
+      name,
+      kategorie: kat,
+      zutaten
+    });
+    alert("Rezept gespeichert!");
+    document.getElementById("neuName").value = "";
+    document.getElementById("neuKategorie").value = "";
+    document.getElementById("neuZutaten").value = "";
+    document.getElementById("neuLink").value = "";
+    zeigeSeite("rezepte");
+  } else {
+    alert("Bitte alle Felder ausfüllen!");
+  }
+}
+
 
     // Standardseite
     zeigeSeite("zufall");
