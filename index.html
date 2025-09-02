@@ -63,17 +63,19 @@
   }
   input {
     width: 100%;
-    padding: 8px;
+    padding: 12px;
     margin: 5px 0 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 16px;
   }
   button {
     color: white;
     border: none;
-    padding: 8px 12px;
+    padding: 12px 18px;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 16px;
     transition: background 0.3s ease, transform 0.2s ease;
   }
   button:hover:enabled {
@@ -84,19 +86,19 @@
   .btn-green { background: #4CAF50; }
   .btn-green:hover { background-color: #45A049; }
   .btn-grey { background: #9E9E9E; cursor: default; }
-  #rezepteSuche { margin-bottom: 10px; }
+  #rezepteSuche { margin-bottom: 10px; font-size: 16px; padding: 12px; }
 
   /* Handy-Button */
   #mobileBtn {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    background-color: #FF8C42; /* dimmes Orange */
+    background-color: #FF8C42;
     color: white;
-    font-size: 28px;
+    font-size: 36px;
     border: none;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
@@ -118,16 +120,20 @@
   }
   body.mobile-mode nav button {
     width: 100%;
-    text-align: center;
+    font-size: 20px;
+    padding: 20px 0;
   }
   body.mobile-mode .card {
-    padding: 20px;
-    font-size: 18px;
+    padding: 25px;
+    font-size: 20px;
   }
-  body.mobile-mode #mobileBtn {
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
+  body.mobile-mode input, body.mobile-mode textarea {
+    font-size: 20px;
+    padding: 16px;
+  }
+  body.mobile-mode button {
+    font-size: 20px;
+    padding: 16px 20px;
   }
 </style>
 </head>
