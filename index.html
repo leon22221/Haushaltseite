@@ -4,13 +4,15 @@
 <meta charset="UTF-8">
 <title>Digitales Rezeptebuch</title>
 <style>
-  body, h3, p, span, strong, a, li {
-    color: #333 !important;
-  }
   body {
     font-family: "Segoe UI", Tahoma, sans-serif;
     margin: 0;
     background: #f4f6f9;
+    color: #333;
+  }
+  strong, a, li, span, button {
+    color: inherit;
+    text-decoration: none;
   }
   header {
     background: #E53935;
@@ -30,7 +32,7 @@
     margin: 2px;
     background: #C62828;
     border: none;
-    color: white;
+    color: white !important; /* Erzwingt weiße Schrift */
     padding: 20px 0;
     font-size: 20px;
     font-weight: bold;
@@ -52,15 +54,18 @@
     border-radius: 12px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.12);
     margin-bottom: 20px;
+    color: #333; /* Schrift auf Karte dunkelgrau */
   }
   .card h3 {
     margin-top: 0;
     font-size: 26px;
     font-weight: bold;
+    color: #333;
   }
   .card p {
     font-size: 18px;
     margin: 5px 0 10px 0;
+    color: #333;
   }
   .zutaten-item {
     display: flex;
@@ -70,6 +75,7 @@
     padding: 8px 0;
     font-size: 18px;
     border-bottom: 1px solid #ddd;
+    color: #333;
   }
   .zutaten-item span {
     display: inline-block;
@@ -81,6 +87,13 @@
     font-size: 18px;
     border-radius: 6px;
     border: 1px solid #ccc;
+    color: #333;
+  }
+  button.action-btn, .remove-btn {
+    font-family: inherit;
+    color: white !important; /* Erzwingt weiße Schrift */
+    text-decoration: none;
+    cursor: pointer;
   }
   button.action-btn {
     width: 100%;
@@ -99,6 +112,10 @@
     min-width: 120px;
     padding: 10px;
     font-size: 16px;
+    background: #E53935;
+    border: none;
+    border-radius: 6px;
+    color: white !important; /* Erzwingt weiße Schrift */
   }
 
   /* Mobile-optimiertes Layout */
@@ -224,7 +241,7 @@ function renderListe() {
   einkaufsliste.forEach((z,i)=>{
     const item = document.createElement("div");
     item.className="zutaten-item";
-    item.innerHTML = `<span>${z}</span><button class="btn-red remove-btn" onclick="removeFromList(${i})">Entfernen</button>`;
+    item.innerHTML = `<span>${z}</span><button class="remove-btn" onclick="removeFromList(${i})">Entfernen</button>`;
     div.appendChild(item);
   });
 }
