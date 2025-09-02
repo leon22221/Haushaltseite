@@ -10,6 +10,10 @@
     background: #f4f6f9;
     color: #333;
   }
+  strong, a {
+    color: inherit;
+    text-decoration: none;
+  }
   header {
     background: #E53935;
     color: white;
@@ -63,18 +67,14 @@
   .zutaten-item {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* vertikal zentrieren */
+    align-items: center;
     margin: 8px 0;
     padding: 8px 0;
     font-size: 18px;
     border-bottom: 1px solid #ddd;
-    color: #333;
   }
-  .zutaten-item button {
-    width: 120px;       /* feste Breite */
-    padding: 10px 0;    /* Höhe des Buttons */
-    font-size: 18px;
-    flex-shrink: 0;     /* Button schrumpft nicht */
+  .zutaten-item span {
+    display: inline-block;
   }
   input, textarea {
     width: 100%;
@@ -96,7 +96,13 @@
   .btn-green { background: #4CAF50; }
   .btn-green:hover { background-color: #45A049; }
   .btn-grey { background: #9E9E9E; cursor: default; }
-  
+  .remove-btn {
+    width: 120px;
+    min-width: 120px;
+    padding: 10px;
+    font-size: 16px;
+  }
+
   /* Mobile-optimiertes Layout */
   @media (max-width: 768px) {
     header { font-size: 32px; padding: 25px; }
@@ -106,9 +112,9 @@
     .card h3 { font-size: 30px; margin-bottom: 12px; }
     .card p { font-size: 20px; }
     .zutaten-item { font-size: 20px; padding: 10px 0; }
-    .zutaten-item button { width: 120px; font-size: 20px; }
     input, textarea { font-size: 20px; padding: 18px; }
     button.action-btn { font-size: 22px; padding: 20px 0; }
+    .remove-btn { width: 120px; min-width: 120px; }
   }
 </style>
 </head>
@@ -220,7 +226,7 @@ function renderListe() {
   einkaufsliste.forEach((z,i)=>{
     const item = document.createElement("div");
     item.className="zutaten-item";
-    item.innerHTML = `<span>${z}</span><button class="btn-red" onclick="removeFromList(${i})">Entfernen</button>`;
+    item.innerHTML = `<span>${z}</span><button class="btn-red remove-btn" onclick="removeFromList(${i})">Entfernen</button>`;
     div.appendChild(item);
   });
 }
