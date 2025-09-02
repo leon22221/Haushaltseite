@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "name": "Pizza-TKVersion",
+    "kategorie": "schnell",
+    "zutaten": ["500g Spaghetti", "300g Hackfleisch", "400g Tomaten"],
+    "link": ""
+  },
+  {
+    "id": 2,
+    "name": "Spaghetti Cabonara",
+    "kategorie": "selbstgemacht",
+    "zutaten": ["500g Nudeln", "200g Speck", "3 Eier", "160g Parmesan"],
+    "link": "https://www.chefkoch.de/rezepte/1298241234947062/Carbonara-wie-bei-der-Mamma-in-Rom.html"
+  },
+  {
+    "id": 3,
+    "name": "Auflauf nach Vadders-Art (2 Tage)",
+    "kategorie": "selbstgemacht",
+    "zutaten": ["1kg Nudeln", "1x Packung FleischWURST", "1x Packung Käse (gerieben)", "1x Brokkoli"],
+    "link": ""
+  },
+  {
+    "id": 4,
+    "name": "Burger",
+    "kategorie": "schnell",
+    "zutaten": ["1x Packung Burger Buns", "500g Hackfleisch"],
+    "link": ""
+  },
+  {
+    "id": 5,
+    "name": "Lasagne (Ferig-Version)",
+    "kategorie": "schnell",
+    "zutaten": ["1x Fertig-Lasagne"],
+    "link": ""
+  },
+  {
+    "id": 6,
+    "name": "Flammkuchen",
+    "kategorie": "selbstgemacht",
+    "zutaten": ["400g Mehl", "400g Schmand", "400g Tomaten", "4 Zwiebeln", "200g Speck", "300g Hackfleisch"],
+    "link": "https://www.chefkoch.de/rezepte/1112251217261411/Einfacher-Flammkuchen.html"
+  },
+  {
+    "id": 7,
+    "name": "Wraps mit Hähnchen & Salat",
+    "kategorie": "schnell",
+    "zutaten": ["1x Packung Wraps", "1x Kopfsalat", "200g Hähnchen"],
+    "link": ""
+  },
+  {
+    "id": 8,
+    "name": "Reibekuchen (Fertig-Version)",
+    "kategorie": "schnell",
+    "zutaten": ["1x Fertig-Reibekuchen"],
+    "link": ""
+  },
+  {
+    "id": 9,
+    "name": "One-Pot-Pasta",
+    "kategorie": "selbstgemacht",
+    "zutaten": ["500g Hackfleisch", "250g Nudeln", "100g Kräuterfrischkäse", "250g Nudeln", "1x Bund Frühlingszwiebeln", "500ml Gemüsefond", "1x Dose Tomaten (stückig)", "40g Tomatenmark"],
+    "link": "https://emmikochteinfach.de/one-pot-pasta-nach-bolognese-art"
+  },
+  {
+    "id": 10,
+    "name": "Schnitzel mit Beilage",
+    "kategorie": "schnell",
+    "zutaten": ["1x Fertig-Schnitzel", "1x Beilage"],
+    "link": ""
+  },
+  {
+    "id": 11,
+    "name": "Hühnerfrikasse",
+    "kategorie": "schnell",
+    "zutaten": ["1x Fertig-Frikasse", "500g Reis"],
+    "link": ""
+  },
+  {
+    "id": 12,
+    "name": "Schlemmerfilet mit Beilage",
+    "kategorie": "schnell",
+    "zutaten": ["1x Schlemmerfilet", "1x Beilage"],
+    "link": ""
+  }
+]
