@@ -32,7 +32,7 @@
     margin: 2px;
     background: #C62828;
     border: none;
-    color: white !important; /* Erzwingt weiße Schrift */
+    color: white !important;
     padding: 20px 0;
     font-size: 20px;
     font-weight: bold;
@@ -54,7 +54,7 @@
     border-radius: 12px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.12);
     margin-bottom: 20px;
-    color: #333; /* Schrift auf Karte dunkelgrau */
+    color: #333;
   }
   .card h3 {
     margin-top: 0;
@@ -91,7 +91,7 @@
   }
   button.action-btn, .remove-btn {
     font-family: inherit;
-    color: white !important; /* Erzwingt weiße Schrift */
+    color: white !important;
     text-decoration: none;
     cursor: pointer;
   }
@@ -115,10 +115,9 @@
     background: #E53935;
     border: none;
     border-radius: 6px;
-    color: white !important; /* Erzwingt weiße Schrift */
+    color: white !important;
   }
 
-  /* Mobile-optimiertes Layout */
   @media (max-width: 768px) {
     header { font-size: 32px; padding: 25px; }
     nav { flex-direction: column; }
@@ -198,15 +197,19 @@ async function ladeRezepte() {
 }
 
 function zeigeZufallsrezept() {
-  if (rezepte.length === 0) return;
-  const zufall = Math.floor(Math.random() * rezepte.length);
-  const r = rezepte[zufall];
+  const alleRezepte = rezepte.concat(backrezepte);
+  if (alleRezepte.length === 0) return;
+  const zufall = Math.floor(Math.random() * alleRezepte.length);
+  const r = alleRezepte[zufall];
   const container = document.getElementById("zufallsrezept");
   container.innerHTML = `
     <h3>${r.name}</h3>
-    <ul>${r.zutaten.map(z => `<li>${z}</li>`).join("")}</ul>
-    <button onclick="addToList(${zufall}, 'rezepte')" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
-    <button class="${r.link ? 'btn-green' : 'btn-grey'} action-btn" ${r.link ? `onclick="window.open('${r.link}','_blank')"` : 'disabled'}>Rezept ansehen</button>
+    ${r.kategorie ? `<p><strong>Kategorie:</strong> ${r.kategorie}</p>` : ''}
+    ${r.zeit ? `<p><strong>Zubereitungszeit:</strong> ${r.zeit}</p>` : ''}
+    <h4>Zutaten:</h4>
+    <ul>${r.zutaten.map(z => `<li>${z}</li>`).join('')}</ul>
+    <button onclick="addToList(${zufall}, '${rezepte.includes(r)?'rezepte':'backrezepte'}')" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
+    <button class="${r.link?'btn-green':'btn-grey'} action-btn" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
   `;
 }
 
@@ -258,7 +261,9 @@ function renderRezepte(filter="") {
     div.className = "card";
     div.innerHTML = `
       <h3>${r.name}</h3>
-      <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
+      ${r.kategorie ? `<p><strong>Kategorie:</strong> ${r.kategorie}</p>` : ''}
+      <h4>Zutaten:</h4>
+      <ul>${r.zutaten.map(z => `<li>${z}</li>`).join('')}</ul>
       <button onclick="addToList(${idx}, 'rezepte')" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
       <button class="${r.link?'btn-green':'btn-grey'} action-btn" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
     `;
@@ -280,7 +285,8 @@ function renderBackrezepte(filter="") {
     div.innerHTML = `
       <h3>${r.name}</h3>
       <p><strong>Zubereitungszeit:</strong> ${r.zeit}</p>
-      <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
+      <h4>Zutaten:</h4>
+      <ul>${r.zutaten.map(z => `<li>${z}</li>`).join('')}</ul>
       <button onclick="addToList(${idx}, 'backrezepte')" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
       <button class="${r.link?'btn-green':'btn-grey'} action-btn" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
     `;
@@ -293,7 +299,6 @@ function sucheBackrezepte() {
   renderBackrezepte(wert);
 }
 
-// Init
 zeigeSeite("zufall");
 ladeRezepte();
 </script>
