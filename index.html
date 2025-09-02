@@ -11,7 +11,7 @@
       color: #333;
     }
     header {
-      background: #E53935; /* Rot */
+      background: #E53935;
       color: white;
       padding: 15px;
       text-align: center;
@@ -19,7 +19,7 @@
     nav {
       display: flex;
       justify-content: center;
-      background: #C62828; /* Dunkleres Rot */
+      background: #C62828;
     }
     nav button {
       background: none;
@@ -30,7 +30,7 @@
       font-size: 16px;
     }
     nav button:hover {
-      background: #B71C1C; /* Noch dunkleres Rot */
+      background: #B71C1C;
     }
     main {
       padding: 20px;
@@ -61,7 +61,7 @@
       border-radius: 5px;
     }
     button {
-      background: #E53935; /* Rot */
+      background: #E53935;
       color: white;
       border: none;
       padding: 8px 12px;
@@ -69,7 +69,7 @@
       cursor: pointer;
     }
     button:hover {
-      background: #C62828; /* Dunkleres Rot */
+      background: #C62828;
     }
     #rezepteSuche {
       margin-bottom: 10px;
@@ -123,28 +123,8 @@
   </main>
 
   <script>
-    let rezepte = [
-      {
-        id: 1,
-        name: "Spaghetti Bolognese",
-        kategorie: "Hauptgericht",
-        zutaten: ["500g Spaghetti", "300g Hackfleisch", "400g Tomaten"]
-      },
-      {
-        id: 2,
-        name: "Pfannkuchen",
-        kategorie: "Dessert",
-        zutaten: ["250g Mehl", "500ml Milch", "3 Eier"]
-      },
-      {
-        id: 3,
-        name: "Gemüsesuppe",
-        kategorie: "Suppe",
-        zutaten: ["2 Karotten", "1 Zwiebel", "1L Gemüsebrühe", "1 Kartoffel"]
-      }
-    ];
-
-    let einkaufsliste = [];
+    let rezepte = [];
+    let einkaufsliste = JSON.parse(localStorage.getItem("einkaufsliste")) || [];
 
     // Navigation
     function zeigeSeite(id) {
@@ -155,8 +135,21 @@
       if (id === "liste") renderListe();
     }
 
+    // Rezepte aus Datei laden
+    async function ladeRezepte() {
+      try {
+        const res = await fetch("rezepte.json");
+        rezepte = await res.json();
+        renderRezepte();
+        zeigeZufallsrezept();
+      } catch (err) {
+        console.error("Fehler beim Laden der Rezepte:", err);
+      }
+    }
+
     // Zufallsrezept
     function zeigeZufallsrezept() {
+      if (rezepte.length === 0) return;
       const zufall = Math.floor(Math.random() * rezepte.length);
       const r = rezepte[zufall];
       const container = document.getElementById("zufallsrezept");
@@ -171,6 +164,7 @@
     // Einkaufsliste
     function addToList(index) {
       einkaufsliste.push(...rezepte[index].zutaten);
+      speicherListe();
       renderListe();
       zeigeSeite("liste");
     }
@@ -181,12 +175,14 @@
       if (wert !== "") {
         einkaufsliste.push(wert);
         input.value = "";
+        speicherListe();
         renderListe();
       }
     }
 
     function removeFromList(index) {
       einkaufsliste.splice(index, 1);
+      speicherListe();
       renderListe();
     }
 
@@ -202,6 +198,10 @@
         `;
         div.appendChild(item);
       });
+    }
+
+    function speicherListe() {
+      localStorage.setItem("einkaufsliste", JSON.stringify(einkaufsliste));
     }
 
     // Rezepte anzeigen & suchen
@@ -230,37 +230,17 @@
 
     // Rezept hinzufügen
     function addRezept() {
-  const passwort = prompt("Bitte Passwort eingeben, um ein neues Rezept hinzuzufügen:");
-  if (passwort !== "leon2005") {
-    alert("Falsches Passwort! Zugriff verweigert.");
-    return;
-  }
+      const passwort = prompt("Bitte Passwort eingeben, um ein neues Rezept hinzuzufügen:");
+      if (passwort !== "leon2005") {
+        alert("Falsches Passwort! Zugriff verweigert.");
+        return;
+      }
+      alert("Rezepte müssen aktuell manuell in die Datei 'rezepte.json' eingetragen werden!");
+    }
 
-  const name = document.getElementById("neuName").value.trim();
-  const kat = document.getElementById("neuKategorie").value.trim();
-  const zutaten = document.getElementById("neuZutaten").value.split(",").map(z => z.trim());
-  if (name && kat && zutaten.length > 0) {
-    rezepte.push({
-      id: rezepte.length + 1,
-      name,
-      kategorie: kat,
-      zutaten
-    });
-    alert("Rezept gespeichert!");
-    document.getElementById("neuName").value = "";
-    document.getElementById("neuKategorie").value = "";
-    document.getElementById("neuZutaten").value = "";
-    document.getElementById("neuLink").value = "";
-    zeigeSeite("rezepte");
-  } else {
-    alert("Bitte alle Felder ausfüllen!");
-  }
-}
-
-
-    // Standardseite
+    // Initialisierung
     zeigeSeite("zufall");
-    zeigeZufallsrezept();
+    ladeRezepte();
   </script>
 </body>
 </html>
