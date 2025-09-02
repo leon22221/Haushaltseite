@@ -1,1 +1,14 @@
-s
+[
+  {
+    "name": "Nutella-Kuchen",
+    "zutaten": ["500g Spaghetti", "300g Hackfleisch", "400g Tomaten"],
+    "zeit": "Eine Stunde + 2 Stunden ruhen",
+    "link": ""
+  },
+ {
+    "name": "Nutella-Kuchen",
+    "zutaten": ["500g Spaghetti", "300g Hackfleisch", "400g Tomaten"],
+    "zeit": "Eine Stunde + 2 Stunden ruhen",
+    "link": ""
+  }
+]
