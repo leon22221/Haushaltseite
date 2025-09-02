@@ -16,6 +16,7 @@
     color: white;
     padding: 15px;
     text-align: center;
+    font-size: 24px;
   }
   nav {
     display: flex;
@@ -43,25 +44,26 @@
   .hidden { display: none; }
   .card {
     background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
     margin-bottom: 20px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
   .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
   }
-  .card h3 { margin-top: 0; }
+  .card h3 { margin-top: 0; font-size: 22px; }
   .zutaten-item {
     display: flex;
     justify-content: space-between;
     margin: 5px 0;
     border-bottom: 1px solid #ddd;
     padding: 5px 0;
+    font-size: 16px;
   }
-  input {
+  input, textarea {
     width: 100%;
     padding: 12px;
     margin: 5px 0 10px;
@@ -73,7 +75,7 @@
     color: white;
     border: none;
     padding: 12px 18px;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     transition: background 0.3s ease, transform 0.2s ease;
@@ -126,6 +128,14 @@
   body.mobile-mode .card {
     padding: 25px;
     font-size: 20px;
+  }
+  body.mobile-mode .card h3 {
+    font-size: 28px;
+    margin-bottom: 15px;
+  }
+  body.mobile-mode .zutaten-item {
+    font-size: 20px;
+    padding: 10px 0;
   }
   body.mobile-mode input, body.mobile-mode textarea {
     font-size: 20px;
