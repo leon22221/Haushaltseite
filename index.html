@@ -9,121 +9,97 @@
     margin: 0;
     background: #f4f6f9;
     color: #333;
-    transition: all 0.3s ease;
   }
   header {
     background: #E53935;
     color: white;
-    padding: 15px;
+    padding: 20px;
     text-align: center;
-    font-size: 24px;
+    font-size: 28px;
   }
   nav {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     background: #C62828;
     flex-wrap: wrap;
   }
   nav button {
-    background: none;
+    flex: 1 1 25%;
+    margin: 2px;
+    background: #C62828;
     border: none;
     color: white;
-    padding: 15px 20px;
+    padding: 20px 0;
+    font-size: 20px;
+    font-weight: bold;
     cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s ease;
+    transition: background 0.3s;
   }
   nav button:hover {
     background: #B71C1C;
   }
   main {
-    padding: 20px;
-    max-width: 900px;
+    padding: 15px;
+    max-width: 1000px;
     margin: auto;
   }
   .hidden { display: none; }
   .card {
     background: white;
-    padding: 20px;
+    padding: 25px;
     border-radius: 12px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.12);
     margin-bottom: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  .card h3 {
+    margin-top: 0;
+    font-size: 26px;
+    font-weight: bold;
   }
-  .card h3 { margin-top: 0; font-size: 22px; }
+  .card p {
+    font-size: 18px;
+    margin: 5px 0 10px 0;
+  }
   .zutaten-item {
     display: flex;
     justify-content: space-between;
-    margin: 5px 0;
+    margin: 8px 0;
+    padding: 8px 0;
+    font-size: 18px;
     border-bottom: 1px solid #ddd;
-    padding: 5px 0;
-    font-size: 16px;
   }
   input, textarea {
     width: 100%;
-    padding: 12px;
-    margin: 5px 0 10px;
+    padding: 16px;
+    margin: 8px 0;
+    font-size: 18px;
+    border-radius: 6px;
     border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
   }
-  button {
-    color: white;
-    border: none;
-    padding: 12px 18px;
+  button.action-btn {
+    width: 100%;
+    padding: 18px 0;
+    font-size: 20px;
     border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s ease, transform 0.2s ease;
-  }
-  button:hover:enabled {
-    transform: scale(1.05);
+    margin-top: 10px;
   }
   .btn-red { background: #E53935; }
   .btn-red:hover { background: #C62828; }
   .btn-green { background: #4CAF50; }
   .btn-green:hover { background-color: #45A049; }
   .btn-grey { background: #9E9E9E; cursor: default; }
-  #rezepteSuche, #backrezepteSuche { margin-bottom: 10px; font-size: 16px; padding: 12px; }
-
-  /* Mobile Styles */
+  
+  /* Mobile-optimiertes Layout */
   @media (max-width: 768px) {
-    main {
-      padding: 10px;
-    }
-    nav {
-      flex-direction: column;
-      align-items: stretch;
-    }
-    nav button {
-      width: 100%;
-      font-size: 20px;
-      padding: 20px 0;
-    }
-    .card {
-      padding: 25px;
-      font-size: 20px;
-    }
-    .card h3 {
-      font-size: 28px;
-      margin-bottom: 15px;
-    }
-    .zutaten-item {
-      font-size: 20px;
-      padding: 10px 0;
-    }
-    input, textarea {
-      font-size: 20px;
-      padding: 16px;
-    }
-    button {
-      font-size: 20px;
-      padding: 16px 20px;
-    }
+    header { font-size: 32px; padding: 25px; }
+    nav { flex-direction: column; }
+    nav button { font-size: 22px; padding: 22px 0; }
+    .card { padding: 28px; font-size: 20px; }
+    .card h3 { font-size: 30px; margin-bottom: 12px; }
+    .card p { font-size: 20px; }
+    .zutaten-item { font-size: 20px; padding: 10px 0; }
+    input, textarea { font-size: 20px; padding: 18px; }
+    button.action-btn { font-size: 22px; padding: 20px 0; }
   }
 </style>
 </head>
@@ -131,6 +107,7 @@
 <header>
   <h1>Digitales Rezeptebuch</h1>
 </header>
+
 <nav>
   <button onclick="zeigeSeite('zufall')">Zufallsrezept</button>
   <button onclick="zeigeSeite('rezepte')">Kochrezepte</button>
@@ -141,7 +118,7 @@
 <main>
 <section id="zufall" class="hidden">
   <div id="zufallsrezept" class="card"></div>
-  <button class="btn-red" onclick="zeigeZufallsrezept()">Neues Zufallsrezept anzeigen</button>
+  <button class="btn-red action-btn" onclick="zeigeZufallsrezept()">Neues Zufallsrezept anzeigen</button>
 </section>
 
 <section id="rezepte" class="hidden">
@@ -158,7 +135,7 @@
   <div id="einkaufsliste" class="card"></div>
   <div class="card">
     <input type="text" id="manuelleZutat" placeholder="Neue Zutat eingeben">
-    <button class="btn-red" onclick="addManuell()">Hinzufügen</button>
+    <button class="btn-red action-btn" onclick="addManuell()">Hinzufügen</button>
   </div>
 </section>
 </main>
@@ -168,7 +145,6 @@ let rezepte = [];
 let backrezepte = [];
 let einkaufsliste = JSON.parse(localStorage.getItem("einkaufsliste")) || [];
 
-// Navigation
 function zeigeSeite(id) {
   document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
@@ -177,15 +153,12 @@ function zeigeSeite(id) {
   if (id === "liste") renderListe();
 }
 
-// Rezepte laden
 async function ladeRezepte() {
   try {
     const res1 = await fetch("rezepte.json");
     rezepte = await res1.json();
-
     const res2 = await fetch("backrezepte.json");
     backrezepte = await res2.json();
-
     renderRezepte();
     renderBackrezepte();
     zeigeZufallsrezept();
@@ -194,7 +167,6 @@ async function ladeRezepte() {
   }
 }
 
-// Zufallsrezept
 function zeigeZufallsrezept() {
   if (rezepte.length === 0) return;
   const zufall = Math.floor(Math.random() * rezepte.length);
@@ -203,12 +175,11 @@ function zeigeZufallsrezept() {
   container.innerHTML = `
     <h3>${r.name}</h3>
     <ul>${r.zutaten.map(z => `<li>${z}</li>`).join("")}</ul>
-    <button onclick="addToList(${zufall}, 'rezepte')" class="btn-red">Zur Einkaufsliste hinzufügen</button>
-    <button class="${r.link ? 'btn-green' : 'btn-grey'}" ${r.link ? `onclick="window.open('${r.link}','_blank')"` : 'disabled'}>Rezept ansehen</button>
+    <button onclick="addToList(${zufall}, 'rezepte')" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
+    <button class="${r.link ? 'btn-green' : 'btn-grey'} action-btn" ${r.link ? `onclick="window.open('${r.link}','_blank')"` : 'disabled'}>Rezept ansehen</button>
   `;
 }
 
-// Einkaufsliste
 function addToList(index, typ="rezepte") {
   const quelle = typ === "rezepte" ? rezepte : backrezepte;
   einkaufsliste.push(...quelle[index].zutaten);
@@ -240,7 +211,7 @@ function renderListe() {
   einkaufsliste.forEach((z,i)=>{
     const item = document.createElement("div");
     item.className="zutaten-item";
-    item.innerHTML = `<span>${z}</span><button class="btn-red" onclick="removeFromList(${i})">Entfernen</button>`;
+    item.innerHTML = `<span>${z}</span><button class="btn-red action-btn" onclick="removeFromList(${i})">Entfernen</button>`;
     div.appendChild(item);
   });
 }
@@ -249,7 +220,6 @@ function speicherListe() {
   localStorage.setItem("einkaufsliste", JSON.stringify(einkaufsliste));
 }
 
-// Normale Rezepte anzeigen
 function renderRezepte(filter="") {
   const liste = document.getElementById("rezepteListe");
   liste.innerHTML = "";
@@ -259,8 +229,8 @@ function renderRezepte(filter="") {
     div.innerHTML = `
       <h3>${r.name}</h3>
       <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
-      <button onclick="addToList(${idx}, 'rezepte')" class="btn-red">Zur Einkaufsliste hinzufügen</button>
-      <button class="${r.link?'btn-green':'btn-grey'}" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
+      <button onclick="addToList(${idx}, 'rezepte')" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
+      <button class="${r.link?'btn-green':'btn-grey'} action-btn" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
     `;
     liste.appendChild(div);
   });
@@ -271,7 +241,6 @@ function sucheRezepte() {
   renderRezepte(wert);
 }
 
-// Backrezepte anzeigen
 function renderBackrezepte(filter="") {
   const liste = document.getElementById("backrezepteListe");
   liste.innerHTML = "";
@@ -282,8 +251,8 @@ function renderBackrezepte(filter="") {
       <h3>${r.name}</h3>
       <p><strong>Zubereitungszeit:</strong> ${r.zeit}</p>
       <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
-      <button onclick="addToList(${idx}, 'backrezepte')" class="btn-red">Zur Einkaufsliste hinzufügen</button>
-      <button class="${r.link?'btn-green':'btn-grey'}" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
+      <button onclick="addToList(${idx}, 'backrezepte')" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
+      <button class="${r.link?'btn-green':'btn-grey'} action-btn" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
     `;
     liste.appendChild(div);
   });
