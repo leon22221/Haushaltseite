@@ -93,6 +93,7 @@
   <button onclick="zeigeSeite('zufall')">Zufallsrezept</button>
   <button onclick="zeigeSeite('rezepte')">Rezepte anzeigen</button>
   <button onclick="zeigeSeite('liste')">Einkaufsliste</button>
+  <button onclick="window.open(window.location.href+'?mobile=true','_blank')">Handy-Version</button>
 </nav>
 
 <main>
@@ -185,11 +186,12 @@ function renderListe() {
   einkaufsliste.forEach((z,i)=>{
     const item = document.createElement("div");
     item.className="zutaten-item";
-    item.innerHTML = `<span>${z}</span><button onclick="removeFromList(${i})">Entfernen</button>`;
+    item.innerHTML = `<span>${z}</span><button class="btn-red" onclick="removeFromList(${i})">Entfernen</button>`;
     div.appendChild(item);
   });
 }
 
+// speichern in localStorage
 function speicherListe() {
   localStorage.setItem("einkaufsliste", JSON.stringify(einkaufsliste));
 }
