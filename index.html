@@ -35,31 +35,34 @@
     cursor: pointer;
     transition: background 0.3s;
   }
-  nav button:hover {
-    background: #B71C1C;
-  }
-  main {
-    padding: 15px;
-    max-width: 1000px;
-    margin: auto;
-  }
+  nav button:hover { background: #B71C1C; }
+
+  main { padding: 15px; max-width: 1000px; margin: auto; }
   .hidden { display: none; }
+
   .card {
     background: white;
     padding: 25px;
     border-radius: 12px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.12);
     margin-bottom: 20px;
+    border-bottom: 2px solid #eee; /* Linie für Trennung */
+    color: #333;
   }
+
   .card h3 {
     margin-top: 0;
     font-size: 26px;
     font-weight: bold;
+    color: #333;
   }
+
   .card p {
     font-size: 18px;
     margin: 5px 0 10px 0;
+    color: #333;
   }
+
   .zutaten-item {
     display: flex;
     justify-content: space-between;
@@ -67,7 +70,9 @@
     padding: 8px 0;
     font-size: 18px;
     border-bottom: 1px solid #ddd;
+    color: #333;
   }
+
   input, textarea {
     width: 100%;
     padding: 16px;
@@ -75,20 +80,24 @@
     font-size: 18px;
     border-radius: 6px;
     border: 1px solid #ccc;
+    color: #333;
   }
+
   button.action-btn {
     width: 100%;
     padding: 18px 0;
     font-size: 20px;
     border-radius: 8px;
     margin-top: 10px;
+    color: white;
   }
+
   .btn-red { background: #E53935; }
   .btn-red:hover { background: #C62828; }
   .btn-green { background: #4CAF50; }
   .btn-green:hover { background-color: #45A049; }
   .btn-grey { background: #9E9E9E; cursor: default; }
-  
+
   /* Mobile-optimiertes Layout */
   @media (max-width: 768px) {
     header { font-size: 32px; padding: 25px; }
@@ -176,7 +185,7 @@ function zeigeZufallsrezept() {
     <h3>${r.name}</h3>
     <ul>${r.zutaten.map(z => `<li>${z}</li>`).join("")}</ul>
     <button onclick="addToList(${zufall}, 'rezepte')" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
-    <button class="${r.link ? 'btn-green' : 'btn-grey'} action-btn" ${r.link ? `onclick="window.open('${r.link}','_blank')"` : 'disabled'}>Rezept ansehen</button>
+    <button class="${r.link ? 'btn-green':'btn-grey'} action-btn" ${r.link ? `onclick="window.open('${r.link}','_blank')"` : 'disabled'}>Rezept ansehen</button>
   `;
 }
 
