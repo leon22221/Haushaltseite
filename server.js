@@ -8,12 +8,12 @@ const PORT = 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static("../public")); // Website ausliefern
+app.use(express.static("../public"));
 
-// Datenbank öffnen (erstellt Datei, falls nicht vorhanden)
+// Datenbank öffnen oder erstellen
 const db = new sqlite3.Database("rezepte.db");
 
-// Tabelle erstellen, falls sie nicht existiert
+// Tabelle erstellen, falls nicht existiert
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS rezepte (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,7 +35,7 @@ app.get("/api/rezepte", (req, res) => {
 // Neues Rezept speichern
 app.post("/api/rezepte", (req, res) => {
   const { name, kategorie, zutaten, link } = req.body;
-  const zutatenStr = JSON.stringify(zutaten); // Array als JSON speichern
+  const zutatenStr = JSON.stringify(zutaten);
   db.run(
     "INSERT INTO rezepte (name,kategorie,zutaten,link) VALUES (?,?,?,?)",
     [name, kategorie, zutatenStr, link],
@@ -46,5 +46,4 @@ app.post("/api/rezepte", (req, res) => {
   );
 });
 
-// Server starten
 app.listen(PORT, () => console.log(`Server läuft auf http://localhost:${PORT}`));
