@@ -107,18 +107,37 @@ async function ladeRezepte() {
 }
 
 function parseZutat(zutat) {
+  // Erst checken ob der User schon "x" eingegeben hat
+  let matchX = zutat.match(/^([0-9]+)x\s+(.+)$/i);
+  if (matchX) {
+    return { menge: parseInt(matchX[1]), einheit: "x", name: matchX[2].trim() };
+  }
+
+  // Normales Muster für Mengen mit Einheit
   const match = zutat.match(/^([0-9,.]+)?\s*(g|kg|ml|l)?\s*(.*)$/i);
   let menge = 1;
-  let einheit = 'x';
+  let einheit = "x";
   let name = zutat.trim();
-  if(match){
-    menge = match[1] ? parseFloat(match[1].replace(',', '.')) : 1;
-    einheit = match[2] || 'x';
+
+  if (match) {
+    menge = match[1] ? parseFloat(match[1].replace(",", ".")) : 1;
+    einheit = match[2] || "x";
     name = match[3].trim() || zutat;
-    if(einheit.toLowerCase() === 'kg') { menge *= 1000; einheit='g'; }
-    if(einheit.toLowerCase() === 'l') { menge *= 1000; einheit='ml'; }
+
+    if (einheit.toLowerCase() === "kg") {
+      menge *= 1000; einheit = "g";
+    }
+    if (einheit.toLowerCase() === "l") {
+      menge *= 1000; einheit = "ml";
+    }
   }
-  return {name, menge, einheit};
+
+  // Sonderfall: Zahl ohne Einheit → immer als Stück ("x") interpretieren
+  if ((match && match[1]) && (!match[2] || match[2] === "")) {
+    einheit = "x";
+  }
+
+  return { name, menge, einheit };
 }
 
 function addToList(index, typ="rezepte", button=null) {
@@ -136,8 +155,15 @@ function addToList(index, typ="rezepte", button=null) {
 
 function addManuell() {
   const input = document.getElementById("manuelleZutat");
-  const wert = input.value.trim();
+  let wert = input.value.trim();
+
   if (wert !== "") {
+    // Wenn nur Zahl + Name ohne "x" → automatisch "x" ergänzen
+    let ohneX = wert.match(/^([0-9]+)\s+(.+)$/);
+    if (ohneX) {
+      wert = `${ohneX[1]}x ${ohneX[2]}`;
+    }
+
     einkaufsliste.push(wert);
     input.value = "";
     speicherListe();
