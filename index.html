@@ -1,309 +1,147 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<title>Digitales Rezeptebuch</title>
-<style>
-  body {
-    font-family: "Segoe UI", Tahoma, sans-serif;
-    margin: 0;
-    background: #f4f6f9;
-    color: #333;
-    transition: all 0.3s ease;
-  }
-  header {
-    background: #E53935;
-    color: white;
-    padding: 15px;
-    text-align: center;
-    font-size: 24px;
-  }
-  nav {
-    display: flex;
-    justify-content: center;
-    background: #C62828;
-    flex-wrap: wrap;
-  }
-  nav button {
-    background: none;
-    border: none;
-    color: white;
-    padding: 15px 20px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s ease;
-  }
-  nav button:hover {
-    background: #B71C1C;
-  }
-  main {
-    padding: 20px;
-    max-width: 900px;
-    margin: auto;
-  }
-  .hidden { display: none; }
-  .card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-    margin-bottom: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-  }
-  .card h3 { margin-top: 0; font-size: 22px; }
-  .zutaten-item {
-    display: flex;
-    justify-content: space-between;
-    margin: 5px 0;
-    border-bottom: 1px solid #ddd;
-    padding: 5px 0;
-    font-size: 16px;
-  }
-  input, textarea {
-    width: 100%;
-    padding: 12px;
-    margin: 5px 0 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-  }
-  button {
-    color: white;
-    border: none;
-    padding: 12px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s ease, transform 0.2s ease;
-  }
-  button:hover:enabled {
-    transform: scale(1.05);
-  }
-  .btn-red { background: #E53935; }
-  .btn-red:hover { background: #C62828; }
-  .btn-green { background: #4CAF50; }
-  .btn-green:hover { background-color: #45A049; }
-  .btn-grey { background: #9E9E9E; cursor: default; }
-  #rezepteSuche { margin-bottom: 10px; font-size: 16px; padding: 12px; }
-
-  /* Handy-Button */
-  #mobileBtn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background-color: #FF8C42;
-    color: white;
-    font-size: 36px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease, background 0.2s ease;
-    z-index: 1000;
-  }
-  #mobileBtn:hover {
-    transform: scale(1.1);
-    background-color: #FF9C65;
-  }
-
-  /* Mobile Styles */
-  body.mobile-mode main {
-    padding: 10px;
-  }
-  body.mobile-mode nav {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  body.mobile-mode nav button {
-    width: 100%;
-    font-size: 20px;
-    padding: 20px 0;
-  }
-  body.mobile-mode .card {
-    padding: 25px;
-    font-size: 20px;
-  }
-  body.mobile-mode .card h3 {
-    font-size: 28px;
-    margin-bottom: 15px;
-  }
-  body.mobile-mode .zutaten-item {
-    font-size: 20px;
-    padding: 10px 0;
-  }
-  body.mobile-mode input, body.mobile-mode textarea {
-    font-size: 20px;
-    padding: 16px;
-  }
-  body.mobile-mode button {
-    font-size: 20px;
-    padding: 16px 20px;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>Digitales Rezeptebuch</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      margin: 0;
+      background: #f4f6f9;
+      color: #333;
+    }
+    header {
+      background: #E53935;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      background: #C62828;
+    }
+    nav button {
+      background: none;
+      border: none;
+      color: white;
+      padding: 15px 20px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+    nav button:hover {
+      background: #B71C1C;
+    }
+    main {
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    .hidden { display: none; }
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+    }
+    .card h3 { margin-top: 0; font-size: 1.5em; }
+    .zutaten-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+      border-bottom: 1px solid #ddd;
+      padding: 5px 0;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin: 5px 0 10px;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+    input, textarea {
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #E53935;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover:not([disabled]) {
+      background: #C62828;
+    }
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    #rezepteSuche { margin-bottom: 10px; }
+    /* Responsive für Handy */
+    @media (max-width: 600px) {
+      nav { flex-direction: column; }
+      nav button { font-size: 18px; padding: 12px; }
+      .card { padding: 20px; }
+      input, textarea, button { font-size: 1.1em; padding: 14px; }
+      .card h3 { font-size: 1.8em; }
+    }
+  </style>
 </head>
 <body>
-<header>
-  <h1>Digitales Rezeptebuch</h1>
-</header>
-<nav>
-  <button onclick="zeigeSeite('zufall')">Zufallsrezept</button>
-  <button onclick="zeigeSeite('rezepte')">Rezepte anzeigen</button>
-  <button onclick="zeigeSeite('liste')">Einkaufsliste</button>
-  <button onclick="zeigeSeite('hinzufuegen')">Rezept hinzufügen</button>
-</nav>
+  <header>
+    <h1>Digitales Rezeptebuch</h1>
+  </header>
+  <nav>
+    <button onclick="zeigeSeite('zufall')">Zufallsrezept</button>
+    <button onclick="zeigeSeite('rezepte')">Rezepte anzeigen</button>
+    <button onclick="zeigeSeite('hinzufuegen')">Rezept hinzufügen</button>
+    <button onclick="zeigeSeite('liste')">Einkaufsliste</button>
+  </nav>
 
-<main>
-  <!-- Rezept hinzufügen -->
-<section id="hinzufuegen" class="hidden">
-  <div class="card">
-    <h3>Neues Rezept hinzufügen</h3>
-    <input type="text" id="neuName" placeholder="Name">
-    <input type="text" id="neuKategorie" placeholder="Kategorie">
-    <textarea id="neuZutaten" placeholder="Zutaten (mit Komma trennen)"></textarea>
-    <input type="text" id="neuLink" placeholder="(Optional: Link zum Rezept)">
-    <button onclick="addRezept()">Speichern</button>
-  </div>
-</section>
+  <main>
+    <!-- Zufallsrezept -->
+    <section id="zufall">
+      <div id="zufallsrezept" class="card"></div>
+      <button onclick="zeigeZufallsrezept()">Neues Zufallsrezept anzeigen</button>
+    </section>
 
-<section id="zufall" class="hidden">
-  <div id="zufallsrezept" class="card"></div>
-  <button class="btn-red" onclick="zeigeZufallsrezept()">Neues Zufallsrezept anzeigen</button>
-</section>
+    <!-- Rezepte anzeigen & suchen -->
+    <section id="rezepte" class="hidden">
+      <input type="text" id="rezepteSuche" placeholder="Nach Rezept suchen..." oninput="sucheRezepte()">
+      <div id="rezepteListe"></div>
+    </section>
 
-<section id="rezepte" class="hidden">
-  <input type="text" id="rezepteSuche" placeholder="Nach Rezept suchen..." oninput="sucheRezepte()">
-  <div id="rezepteListe"></div>
-</section>
+    <!-- Rezept hinzufügen -->
+    <section id="hinzufuegen" class="hidden">
+      <div class="card">
+        <h3>Neues Rezept hinzufügen</h3>
+        <input type="text" id="neuName" placeholder="Name">
+        <input type="text" id="neuKategorie" placeholder="Kategorie">
+        <textarea id="neuZutaten" placeholder="Zutaten (mit Komma trennen)"></textarea>
+        <input type="text" id="neuLink" placeholder="(Optional: Link zum Rezept)">
+        <button onclick="addRezept()">Speichern</button>
+      </div>
+    </section>
 
-<section id="liste" class="hidden">
-  <div id="einkaufsliste" class="card"></div>
-  <div class="card">
-    <input type="text" id="manuelleZutat" placeholder="Neue Zutat eingeben">
-    <button class="btn-red" onclick="addManuell()">Hinzufügen</button>
-  </div>
-</section>
-</main>
+    <!-- Einkaufsliste -->
+    <section id="liste" class="hidden">
+      <div id="einkaufsliste" class="card"></div>
+      <div class="card">
+        <input type="text" id="manuelleZutat" placeholder="Neue Zutat eingeben">
+        <button onclick="addManuell()">Hinzufügen</button>
+      </div>
+    </section>
+  </main>
 
-<!-- Handy-Version Button -->
-<button id="mobileBtn" title="Handy-Version aktivieren">📱</button>
-
-<script>
-let rezepte = [];
-let einkaufsliste = JSON.parse(localStorage.getItem("einkaufsliste")) || [];
-
-// Navigation
-function zeigeSeite(id) {
-  document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-  if (id === "rezepte") renderRezepte();
-  if (id === "liste") renderListe();
-}
-
-// Rezepte aus Datei laden
-async function ladeRezepte() {
-  try {
-    const res = await fetch("rezepte.json");
-    rezepte = await res.json();
-    renderRezepte();
-    zeigeZufallsrezept();
-  } catch (err) {
-    console.error("Fehler beim Laden der Rezepte:", err);
-  }
-}
-
-// Zufallsrezept
-function zeigeZufallsrezept() {
-  if (rezepte.length === 0) return;
-  const zufall = Math.floor(Math.random() * rezepte.length);
-  const r = rezepte[zufall];
-  const container = document.getElementById("zufallsrezept");
-  container.innerHTML = `
-    <h3>${r.name}</h3>
-    <p>Kategorie: ${r.kategorie}</p>
-    <ul>${r.zutaten.map(z => `<li>${z}</li>`).join("")}</ul>
-    <button onclick="addToList(${zufall})" class="btn-red">Zur Einkaufsliste hinzufügen</button>
-    <button class="${r.link ? 'btn-green' : 'btn-grey'}" ${r.link ? `onclick="window.open('${r.link}','_blank')"` : 'disabled'}>Rezept ansehen</button>
-  `;
-}
-
-// Einkaufsliste
-function addToList(index) {
-  einkaufsliste.push(...rezepte[index].zutaten);
-  speicherListe();
-  renderListe();
-  zeigeSeite("liste");
-}
-
-function addManuell() {
-  const input = document.getElementById("manuelleZutat");
-  const wert = input.value.trim();
-  if (wert !== "") {
-    einkaufsliste.push(wert);
-    input.value = "";
-    speicherListe();
-    renderListe();
-  }
-}
-
-function removeFromList(index) {
-  einkaufsliste.splice(index, 1);
-  speicherListe();
-  renderListe();
-}
-
-function renderListe() {
-  const div = document.getElementById("einkaufsliste");
-  div.innerHTML = "<h3>Einkaufsliste</h3>";
-  einkaufsliste.forEach((z,i)=>{
-    const item = document.createElement("div");
-    item.className="zutaten-item";
-    item.innerHTML = `<span>${z}</span><button class="btn-red" onclick="removeFromList(${i})">Entfernen</button>`;
-    div.appendChild(item);
-  });
-}
-
-// speichern in localStorage
-function speicherListe() {
-  localStorage.setItem("einkaufsliste", JSON.stringify(einkaufsliste));
-}
-
-// Rezepte anzeigen & suchen
-function renderRezepte(filter="") {
-  const liste = document.getElementById("rezepteListe");
-  liste.innerHTML = "";
-  rezepte.filter(r => r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <h3>${r.name}</h3>
-      <p>Kategorie: ${r.kategorie}</p>
-      <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
-      <button onclick="addToList(${idx})" class="btn-red">Zur Einkaufsliste hinzufügen</button>
-      <button class="${r.link?'btn-green':'btn-grey'}" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
-    `;
-    liste.appendChild(div);
-  });
-}
-
-function sucheRezepte() {
-  const wert = document.getElementById("rezepteSuche").value;
-  renderRezepte(wert);
-}
-
-// Handy-Button klick
-document.getElementById("mobileBtn").onclick = function() {
-  document.body.classList.toggle("mobile-mode");
-};
-
-// Initialisierung
-zeigeSeite("zufall");
-ladeRezepte();
-</script>
+  <script src="script.js"></script>
 </body>
 </html>
