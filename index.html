@@ -155,9 +155,22 @@
   <button onclick="zeigeSeite('zufall')">Zufallsrezept</button>
   <button onclick="zeigeSeite('rezepte')">Rezepte anzeigen</button>
   <button onclick="zeigeSeite('liste')">Einkaufsliste</button>
+  <button onclick="zeigeSeite('hinzufuegen')">Rezept hinzufügen</button>
 </nav>
 
 <main>
+  <!-- Rezept hinzufügen -->
+<section id="hinzufuegen" class="hidden">
+  <div class="card">
+    <h3>Neues Rezept hinzufügen</h3>
+    <input type="text" id="neuName" placeholder="Name">
+    <input type="text" id="neuKategorie" placeholder="Kategorie">
+    <textarea id="neuZutaten" placeholder="Zutaten (mit Komma trennen)"></textarea>
+    <input type="text" id="neuLink" placeholder="(Optional: Link zum Rezept)">
+    <button onclick="addRezept()">Speichern</button>
+  </div>
+</section>
+
 <section id="zufall" class="hidden">
   <div id="zufallsrezept" class="card"></div>
   <button class="btn-red" onclick="zeigeZufallsrezept()">Neues Zufallsrezept anzeigen</button>
