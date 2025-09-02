@@ -80,9 +80,31 @@
   .btn-red { background: #E53935; }
   .btn-red:hover { background: #C62828; }
   .btn-green { background: #4CAF50; }
-  .btn-green:hover { background: #45A049; }
+  .btn-green:hover { background-color: #45A049; }
   .btn-grey { background: #9E9E9E; cursor: default; }
   #rezepteSuche { margin-bottom: 10px; }
+
+  /* Handy-Button */
+  #mobileBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #FF8C42; /* dimmes Orange */
+    color: white;
+    font-size: 28px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease, background 0.2s ease;
+    z-index: 1000;
+  }
+  #mobileBtn:hover {
+    transform: scale(1.1);
+    background-color: #FF9C65;
+  }
 </style>
 </head>
 <body>
@@ -93,7 +115,6 @@
   <button onclick="zeigeSeite('zufall')">Zufallsrezept</button>
   <button onclick="zeigeSeite('rezepte')">Rezepte anzeigen</button>
   <button onclick="zeigeSeite('liste')">Einkaufsliste</button>
-  <button onclick="window.open(window.location.href+'?mobile=true','_blank')">Handy-Version</button>
 </nav>
 
 <main>
@@ -115,6 +136,9 @@
   </div>
 </section>
 </main>
+
+<!-- Handy-Version Button -->
+<button id="mobileBtn" title="Handy-Version öffnen">📱</button>
 
 <script>
 let rezepte = [];
@@ -218,6 +242,11 @@ function sucheRezepte() {
   const wert = document.getElementById("rezepteSuche").value;
   renderRezepte(wert);
 }
+
+// Handy-Button Klick
+document.getElementById("mobileBtn").onclick = function() {
+  window.open(window.location.href+'?mobile=true','_blank');
+};
 
 // Initialisierung
 zeigeSeite("zufall");
