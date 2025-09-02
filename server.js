@@ -8,7 +8,7 @@ const PORT = 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static("../public"));
+app.use(express.static("../server"));
 
 // Datenbank öffnen oder erstellen
 const db = new sqlite3.Database("rezepte.db");
