@@ -4,130 +4,29 @@
 <meta charset="UTF-8">
 <title>Digitales Rezeptebuch</title>
 <style>
-  body {
-    font-family: "Segoe UI", Tahoma, sans-serif;
-    margin: 0;
-    background: #f4f6f9;
-    color: #333;
-  }
-  strong, a, li, span, button {
-    color: inherit;
-    text-decoration: none;
-  }
-  header {
-    background: #E53935;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    font-size: 28px;
-  }
-  nav {
-    display: flex;
-    justify-content: space-around;
-    background: #C62828;
-    flex-wrap: wrap;
-  }
-  nav button {
-    flex: 1 1 25%;
-    margin: 2px;
-    background: #C62828;
-    border: none;
-    color: white !important;
-    padding: 20px 0;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  nav button:hover {
-    background: #B71C1C;
-  }
-  main {
-    padding: 15px;
-    max-width: 1000px;
-    margin: auto;
-  }
+  body { font-family: "Segoe UI", Tahoma, sans-serif; margin: 0; background: #f4f6f9; color: #333; }
+  strong, a, li, span, button { color: inherit; text-decoration: none; }
+  header { background: #E53935; color: white; padding: 20px; text-align: center; font-size: 28px; }
+  nav { display: flex; justify-content: space-around; background: #C62828; flex-wrap: wrap; }
+  nav button { flex: 1 1 25%; margin: 2px; background: #C62828; border: none; color: white !important; padding: 20px 0; font-size: 20px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+  nav button:hover { background: #B71C1C; }
+  main { padding: 15px; max-width: 1000px; margin: auto; }
   .hidden { display: none; }
-  .card {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-    margin-bottom: 20px;
-    color: #333;
-  }
-  .card h3 {
-    margin-top: 0;
-    font-size: 26px;
-    font-weight: bold;
-    color: #333;
-  }
-  .card p {
-    font-size: 18px;
-    margin: 5px 0 10px 0;
-    color: #333;
-  }
-  .zutaten-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 8px 0;
-    padding: 8px 0;
-    font-size: 18px;
-    border-bottom: 1px solid #ddd;
-    color: #333;
-  }
-  .zutaten-item span {
-    display: inline-block;
-  }
-  input, textarea {
-    width: 100%;
-    padding: 16px;
-    margin: 8px 0;
-    font-size: 18px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    color: #333;
-  }
-  button.action-btn, .remove-btn {
-    font-family: inherit;
-    color: white !important;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  button.action-btn {
-    width: 100%;
-    padding: 18px 0;
-    font-size: 20px;
-    border-radius: 8px;
-    margin-top: 10px;
-    position: relative;
-  }
+  .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.12); margin-bottom: 20px; color: #333; }
+  .card h3 { margin-top: 0; font-size: 26px; font-weight: bold; color: #333; }
+  .card p { font-size: 18px; margin: 5px 0 10px 0; color: #333; }
+  .zutaten-item { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; padding: 8px 0; font-size: 18px; border-bottom: 1px solid #ddd; color: #333; }
+  .zutaten-item span { display: inline-block; }
+  input, textarea { width: 100%; padding: 16px; margin: 8px 0; font-size: 18px; border-radius: 6px; border: 1px solid #ccc; color: #333; }
+  button.action-btn, .remove-btn { font-family: inherit; color: white !important; text-decoration: none; cursor: pointer; }
+  button.action-btn { width: 100%; padding: 18px 0; font-size: 20px; border-radius: 8px; margin-top: 10px; position: relative; }
   .btn-red { background: #E53935; }
   .btn-red:hover { background: #C62828; }
   .btn-green { background: #4CAF50; }
   .btn-green:hover { background-color: #45A049; }
   .btn-grey { background: #9E9E9E; cursor: default; }
-  .remove-btn {
-    width: 120px;
-    min-width: 120px;
-    padding: 10px;
-    font-size: 16px;
-    background: #E53935;
-    border: none;
-    border-radius: 6px;
-    color: white !important;
-  }
-  .checkmark {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 20px;
-    color: #4CAF50;
-    opacity: 0;
-    transition: opacity 0.5s;
-  }
+  .remove-btn { width: 120px; min-width: 120px; padding: 10px; font-size: 16px; background: #E53935; border: none; border-radius: 6px; color: white !important; }
+  .checkmark { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 20px; color: #4CAF50; opacity: 0; transition: opacity 0.5s; }
   .show-check { opacity: 1; }
   @media (max-width: 768px) {
     header { font-size: 32px; padding: 25px; }
@@ -293,6 +192,55 @@ function zeigeZufallsrezept() {
   `;
 }
 
+function renderRezepte(filter="") {
+  const liste = document.getElementById("rezepteListe");
+  liste.innerHTML = "";
+  rezepte.filter(r => r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <h3>${r.name}</h3>
+      ${r.kategorie ? `<p><strong>Kategorie:</strong> ${r.kategorie}</p>` : ''}
+      <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
+      <button onclick="addToList(${idx}, 'rezepte', this)" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
+      <button class="${r.link?'btn-green':'btn-grey'} action-btn" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
+    `;
+    liste.appendChild(div);
+  });
+}
+
+function sucheRezepte() {
+  const wert = document.getElementById("rezepteSuche").value;
+  renderRezepte(wert);
+}
+
+function renderBackrezepte(filter="") {
+  const liste = document.getElementById("backrezepteListe");
+  liste.innerHTML = "";
+  backrezepte.filter(r => r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <h3>${r.name}</h3>
+      <p><strong>Zubereitungszeit:</strong> ${r.zeit}</p>
+      <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
+      <button onclick="addToList(${idx}, 'backrezepte', this)" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
+      <button class="${r.link?'btn-green':'btn-grey'} action-btn" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
+    `;
+    liste.appendChild(div);
+  });
+}
+
+function sucheBackrezepte() {
+  const wert = document.getElementById("backrezepteSuche").value;
+  renderBackrezepte(wert);
+}
+
+function speicherListe() {
+  localStorage.setItem("einkaufsliste", JSON.stringify(einkaufsliste));
+}
+
+// Init
 zeigeSeite("zufall");
 ladeRezepte();
 </script>
