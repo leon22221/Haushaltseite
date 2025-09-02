@@ -90,24 +90,6 @@
   .btn-grey { background: #9E9E9E; cursor: default; }
   #rezepteSuche { margin-bottom: 10px; font-size: 16px; padding: 12px; }
 
-  /* Filter Buttons */
-  .filter-container {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-  }
-  .filter-btn {
-    background: #ddd;
-    color: #333;
-    border-radius: 8px;
-    padding: 10px 16px;
-  }
-  .filter-btn.active {
-    background: #E53935;
-    color: white;
-    font-weight: bold;
-  }
-
   /* Handy-Button */
   #mobileBtn {
     position: fixed;
@@ -172,6 +154,7 @@
 <nav>
   <button onclick="zeigeSeite('zufall')">Zufallsrezept</button>
   <button onclick="zeigeSeite('rezepte')">Rezepte anzeigen</button>
+  <button onclick="zeigeSeite('backrezepte')">Backrezepte</button>
   <button onclick="zeigeSeite('liste')">Einkaufsliste</button>
 </nav>
 
@@ -182,12 +165,13 @@
 </section>
 
 <section id="rezepte" class="hidden">
-  <div class="filter-container">
-    <button id="btnKoch" class="filter-btn active" onclick="wechselRezepte('koch')">Kochrezepte</button>
-    <button id="btnBack" class="filter-btn" onclick="wechselRezepte('back')">Backrezepte</button>
-  </div>
   <input type="text" id="rezepteSuche" placeholder="Nach Rezept suchen..." oninput="sucheRezepte()">
   <div id="rezepteListe"></div>
+</section>
+
+<section id="backrezepte" class="hidden">
+  <input type="text" id="backrezepteSuche" placeholder="Nach Backrezept suchen..." oninput="sucheBackrezepte()">
+  <div id="backrezepteListe"></div>
 </section>
 
 <section id="liste" class="hidden">
@@ -204,38 +188,36 @@
 
 <script>
 let rezepte = [];
+let backrezepte = [];
 let einkaufsliste = JSON.parse(localStorage.getItem("einkaufsliste")) || [];
-let aktuellerTyp = "koch"; // Standardmäßig Kochrezepte
 
 // Navigation
 function zeigeSeite(id) {
   document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
   if (id === "rezepte") renderRezepte();
+  if (id === "backrezepte") renderBackrezepte();
   if (id === "liste") renderListe();
 }
 
 // Rezepte laden
-async function ladeRezepte(datei) {
+async function ladeRezepte() {
   try {
-    const res = await fetch(datei);
-    rezepte = await res.json();
+    const res1 = await fetch("rezepte.json");
+    rezepte = await res1.json();
+
+    const res2 = await fetch("backrezepte.json");
+    backrezepte = await res2.json();
+
     renderRezepte();
-    if (datei === "rezepte.json") zeigeZufallsrezept();
+    renderBackrezepte();
+    zeigeZufallsrezept();
   } catch (err) {
-    console.error("Fehler beim Laden:", err);
+    console.error("Fehler beim Laden der Rezepte:", err);
   }
 }
 
-// Umschalten Koch/Back
-function wechselRezepte(typ) {
-  aktuellerTyp = typ;
-  document.getElementById("btnKoch").classList.toggle("active", typ === "koch");
-  document.getElementById("btnBack").classList.toggle("active", typ === "back");
-  ladeRezepte(typ === "koch" ? "rezepte.json" : "backrezepte.json");
-}
-
-// Zufallsrezept
+// Zufallsrezept (nur aus normalen Rezepten)
 function zeigeZufallsrezept() {
   if (rezepte.length === 0) return;
   const zufall = Math.floor(Math.random() * rezepte.length);
@@ -243,20 +225,21 @@ function zeigeZufallsrezept() {
   const container = document.getElementById("zufallsrezept");
   container.innerHTML = `
     <h3>${r.name}</h3>
-    <p>Zeit: ${r.zeit || "?"} Minuten</p>
     <ul>${r.zutaten.map(z => `<li>${z}</li>`).join("")}</ul>
-    <button onclick="addToList(${zufall})" class="btn-red">Zur Einkaufsliste hinzufügen</button>
+    <button onclick="addToList(${zufall}, 'rezepte')" class="btn-red">Zur Einkaufsliste hinzufügen</button>
     <button class="${r.link ? 'btn-green' : 'btn-grey'}" ${r.link ? `onclick="window.open('${r.link}','_blank')"` : 'disabled'}>Rezept ansehen</button>
   `;
 }
 
 // Einkaufsliste
-function addToList(index) {
-  einkaufsliste.push(...rezepte[index].zutaten);
+function addToList(index, typ="rezepte") {
+  const quelle = typ === "rezepte" ? rezepte : backrezepte;
+  einkaufsliste.push(...quelle[index].zutaten);
   speicherListe();
   renderListe();
   zeigeSeite("liste");
 }
+
 function addManuell() {
   const input = document.getElementById("manuelleZutat");
   const wert = input.value.trim();
@@ -267,11 +250,13 @@ function addManuell() {
     renderListe();
   }
 }
+
 function removeFromList(index) {
   einkaufsliste.splice(index, 1);
   speicherListe();
   renderListe();
 }
+
 function renderListe() {
   const div = document.getElementById("einkaufsliste");
   div.innerHTML = "<h3>Einkaufsliste</h3>";
@@ -282,11 +267,12 @@ function renderListe() {
     div.appendChild(item);
   });
 }
+
 function speicherListe() {
   localStorage.setItem("einkaufsliste", JSON.stringify(einkaufsliste));
 }
 
-// Rezepte anzeigen & suchen
+// Normale Rezepte anzeigen
 function renderRezepte(filter="") {
   const liste = document.getElementById("rezepteListe");
   liste.innerHTML = "";
@@ -295,27 +281,50 @@ function renderRezepte(filter="") {
     div.className = "card";
     div.innerHTML = `
       <h3>${r.name}</h3>
-      <p>Zeit: ${r.zeit || "?"} Minuten</p>
       <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
-      <button onclick="addToList(${idx})" class="btn-red">Zur Einkaufsliste hinzufügen</button>
+      <button onclick="addToList(${idx}, 'rezepte')" class="btn-red">Zur Einkaufsliste hinzufügen</button>
       <button class="${r.link?'btn-green':'btn-grey'}" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
     `;
     liste.appendChild(div);
   });
 }
+
 function sucheRezepte() {
   const wert = document.getElementById("rezepteSuche").value;
   renderRezepte(wert);
 }
 
-// Handy-Button klick
+// Backrezepte anzeigen (mit Zeit)
+function renderBackrezepte(filter="") {
+  const liste = document.getElementById("backrezepteListe");
+  liste.innerHTML = "";
+  backrezepte.filter(r => r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <h3>${r.name}</h3>
+      <p><strong>Zubereitungszeit:</strong> ${r.zeit}</p>
+      <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
+      <button onclick="addToList(${idx}, 'backrezepte')" class="btn-red">Zur Einkaufsliste hinzufügen</button>
+      <button class="${r.link?'btn-green':'btn-grey'}" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
+    `;
+    liste.appendChild(div);
+  });
+}
+
+function sucheBackrezepte() {
+  const wert = document.getElementById("backrezepteSuche").value;
+  renderBackrezepte(wert);
+}
+
+// Handy-Button
 document.getElementById("mobileBtn").onclick = function() {
   document.body.classList.toggle("mobile-mode");
 };
 
-// Initialisierung
+// Init
 zeigeSeite("zufall");
-wechselRezepte("koch"); // Start mit Kochrezepten
+ladeRezepte();
 </script>
 </body>
 </html>
