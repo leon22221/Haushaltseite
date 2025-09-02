@@ -1,13 +1,7 @@
 [
   {
     "name": "Nutella-Kuchen",
-    "zutaten": ["500g Spaghetti", "300g Hackfleisch", "400g Tomaten"],
-    "zeit": "Eine Stunde + 2 Stunden ruhen",
-    "link": ""
-  },
- {
-    "name": "Nutella-Kuchen",
-    "zutaten": ["500g Spaghetti", "300g Hackfleisch", "400g Tomaten"],
+    "zutaten": ["1x Glas Nutella", "1x Packung Zwieback", "1x Götterspeise", "200g Quark (o.ä)"],
     "zeit": "Eine Stunde + 2 Stunden ruhen",
     "link": ""
   }
