@@ -3,12 +3,12 @@
     "id": 1,
     "name": "Pizza-TKVersion",
     "kategorie": "schnell",
-    "zutaten": ["500g Spaghetti", "300g Hackfleisch", "400g Tomaten"],
+    "zutaten": ["1x TK-Pizza"],
     "link": ""
   },
   {
     "id": 2,
-    "name": "Spaghetti Cabonara",
+    "name": "Spaghetti Carbonara",
     "kategorie": "selbstgemacht",
     "zutaten": ["500g Nudeln", "200g Speck", "3 Eier", "160g Parmesan"],
     "link": "https://www.chefkoch.de/rezepte/1298241234947062/Carbonara-wie-bei-der-Mamma-in-Rom.html"
@@ -29,7 +29,7 @@
   },
   {
     "id": 5,
-    "name": "Lasagne (Ferig-Version)",
+    "name": "Lasagne (Fertig-Version)",
     "kategorie": "schnell",
     "zutaten": ["1x Fertig-Lasagne"],
     "link": ""
