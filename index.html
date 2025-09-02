@@ -1,246 +1,225 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Digitales Rezeptebuch</title>
-  <style>
-    body {
-      font-family: "Segoe UI", Tahoma, sans-serif;
-      margin: 0;
-      background: #f4f6f9;
-      color: #333;
-    }
-    header {
-      background: #E53935;
-      color: white;
-      padding: 15px;
-      text-align: center;
-    }
-    nav {
-      display: flex;
-      justify-content: center;
-      background: #C62828;
-    }
-    nav button {
-      background: none;
-      border: none;
-      color: white;
-      padding: 15px 20px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    nav button:hover {
-      background: #B71C1C;
-    }
-    main {
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-    .hidden { display: none; }
-    .card {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-    .card h3 { margin-top: 0; }
-    .zutaten-item {
-      display: flex;
-      justify-content: space-between;
-      margin: 5px 0;
-      border-bottom: 1px solid #ddd;
-      padding: 5px 0;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 8px;
-      margin: 5px 0 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    button {
-      background: #E53935;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #C62828;
-    }
-    #rezepteSuche {
-      margin-bottom: 10px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Digitales Rezeptebuch</title>
+<style>
+  body {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    margin: 0;
+    background: #f4f6f9;
+    color: #333;
+  }
+  header {
+    background: #E53935;
+    color: white;
+    padding: 15px;
+    text-align: center;
+  }
+  nav {
+    display: flex;
+    justify-content: center;
+    background: #C62828;
+  }
+  nav button {
+    background: none;
+    border: none;
+    color: white;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s ease;
+  }
+  nav button:hover {
+    background: #B71C1C;
+  }
+  main {
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+  }
+  .hidden { display: none; }
+  .card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+  .card h3 { margin-top: 0; }
+  .zutaten-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+    border-bottom: 1px solid #ddd;
+    padding: 5px 0;
+  }
+  input {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  button {
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+  button:hover:enabled {
+    transform: scale(1.05);
+  }
+  .btn-red { background: #E53935; }
+  .btn-red:hover { background: #C62828; }
+  .btn-green { background: #4CAF50; }
+  .btn-green:hover { background: #45A049; }
+  .btn-grey { background: #9E9E9E; cursor: default; }
+  #rezepteSuche { margin-bottom: 10px; }
+</style>
 </head>
 <body>
-  <header>
-    <h1>Digitales Rezeptebuch</h1>
-  </header>
-  <nav>
-    <button onclick="zeigeSeite('zufall')">Zufallsrezept</button>
-    <button onclick="zeigeSeite('rezepte')">Rezepte anzeigen</button>
-    <button onclick="zeigeSeite('hinzufuegen')">Rezept hinzufügen</button>
-    <button onclick="zeigeSeite('liste')">Einkaufsliste</button>
-  </nav>
+<header>
+  <h1>Digitales Rezeptebuch</h1>
+</header>
+<nav>
+  <button onclick="zeigeSeite('zufall')">Zufallsrezept</button>
+  <button onclick="zeigeSeite('rezepte')">Rezepte anzeigen</button>
+  <button onclick="zeigeSeite('liste')">Einkaufsliste</button>
+</nav>
 
-  <main>
-    <!-- Zufallsrezept -->
-    <section id="zufall" class="hidden">
-      <div id="zufallsrezept" class="card"></div>
-      <button onclick="zeigeZufallsrezept()">Neues Zufallsrezept anzeigen</button>
-    </section>
+<main>
+<section id="zufall" class="hidden">
+  <div id="zufallsrezept" class="card"></div>
+  <button class="btn-red" onclick="zeigeZufallsrezept()">Neues Zufallsrezept anzeigen</button>
+</section>
 
-    <!-- Rezepte anzeigen & suchen -->
-    <section id="rezepte" class="hidden">
-      <input type="text" id="rezepteSuche" placeholder="Nach Rezept suchen..." oninput="sucheRezepte()">
-      <div id="rezepteListe"></div>
-    </section>
+<section id="rezepte" class="hidden">
+  <input type="text" id="rezepteSuche" placeholder="Nach Rezept suchen..." oninput="sucheRezepte()">
+  <div id="rezepteListe"></div>
+</section>
 
-    <!-- Rezept hinzufügen -->
-    <section id="hinzufuegen" class="hidden">
-      <div class="card">
-        <h3>Neues Rezept hinzufügen</h3>
-        <input type="text" id="neuName" placeholder="Name">
-        <input type="text" id="neuKategorie" placeholder="Kategorie">
-        <textarea id="neuZutaten" placeholder="Zutaten (mit Komma trennen)"></textarea>
-        <input type="text" id="neuLink" placeholder="(Optional: Link zum Rezept)">
-        <button onclick="addRezept()">Speichern</button>
-      </div>
-    </section>
+<section id="liste" class="hidden">
+  <div id="einkaufsliste" class="card"></div>
+  <div class="card">
+    <input type="text" id="manuelleZutat" placeholder="Neue Zutat eingeben">
+    <button class="btn-red" onclick="addManuell()">Hinzufügen</button>
+  </div>
+</section>
+</main>
 
-    <!-- Einkaufsliste -->
-    <section id="liste" class="hidden">
-      <div id="einkaufsliste" class="card"></div>
-      <div class="card">
-        <input type="text" id="manuelleZutat" placeholder="Neue Zutat eingeben">
-        <button onclick="addManuell()">Hinzufügen</button>
-      </div>
-    </section>
-  </main>
+<script>
+let rezepte = [];
+let einkaufsliste = JSON.parse(localStorage.getItem("einkaufsliste")) || [];
 
-  <script>
-    let rezepte = [];
-    let einkaufsliste = JSON.parse(localStorage.getItem("einkaufsliste")) || [];
+// Navigation
+function zeigeSeite(id) {
+  document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  if (id === "rezepte") renderRezepte();
+  if (id === "liste") renderListe();
+}
 
-    // Navigation
-    function zeigeSeite(id) {
-      document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
-      document.getElementById(id).classList.remove("hidden");
+// Rezepte aus Datei laden
+async function ladeRezepte() {
+  try {
+    const res = await fetch("rezepte.json");
+    rezepte = await res.json();
+    renderRezepte();
+    zeigeZufallsrezept();
+  } catch (err) {
+    console.error("Fehler beim Laden der Rezepte:", err);
+  }
+}
 
-      if (id === "rezepte") renderRezepte();
-      if (id === "liste") renderListe();
-    }
+// Zufallsrezept
+function zeigeZufallsrezept() {
+  if (rezepte.length === 0) return;
+  const zufall = Math.floor(Math.random() * rezepte.length);
+  const r = rezepte[zufall];
+  const container = document.getElementById("zufallsrezept");
+  container.innerHTML = `
+    <h3>${r.name}</h3>
+    <p>Kategorie: ${r.kategorie}</p>
+    <ul>${r.zutaten.map(z => `<li>${z}</li>`).join("")}</ul>
+    <button onclick="addToList(${zufall})" class="btn-red">Zur Einkaufsliste hinzufügen</button>
+    <button class="${r.link ? 'btn-green' : 'btn-grey'}" ${r.link ? `onclick="window.open('${r.link}','_blank')"` : 'disabled'}>Rezept ansehen</button>
+  `;
+}
 
-    // Rezepte aus Datei laden
-    async function ladeRezepte() {
-      try {
-        const res = await fetch("rezepte.json");
-        rezepte = await res.json();
-        renderRezepte();
-        zeigeZufallsrezept();
-      } catch (err) {
-        console.error("Fehler beim Laden der Rezepte:", err);
-      }
-    }
+// Einkaufsliste
+function addToList(index) {
+  einkaufsliste.push(...rezepte[index].zutaten);
+  speicherListe();
+  renderListe();
+  zeigeSeite("liste");
+}
 
-    // Zufallsrezept
-    function zeigeZufallsrezept() {
-      if (rezepte.length === 0) return;
-      const zufall = Math.floor(Math.random() * rezepte.length);
-      const r = rezepte[zufall];
-      const container = document.getElementById("zufallsrezept");
-      container.innerHTML = `
-        <h3>${r.name}</h3>
-        <p>Kategorie: ${r.kategorie}</p>
-        <ul>${r.zutaten.map(z => `<li>${z}</li>`).join("")}</ul>
-        <button onclick="addToList(${zufall})">Zur Einkaufsliste hinzufügen</button>
-      `;
-    }
+function addManuell() {
+  const input = document.getElementById("manuelleZutat");
+  const wert = input.value.trim();
+  if (wert !== "") {
+    einkaufsliste.push(wert);
+    input.value = "";
+    speicherListe();
+    renderListe();
+  }
+}
 
-    // Einkaufsliste
-    function addToList(index) {
-      einkaufsliste.push(...rezepte[index].zutaten);
-      speicherListe();
-      renderListe();
-      zeigeSeite("liste");
-    }
+function removeFromList(index) {
+  einkaufsliste.splice(index, 1);
+  speicherListe();
+  renderListe();
+}
 
-    function addManuell() {
-      const input = document.getElementById("manuelleZutat");
-      const wert = input.value.trim();
-      if (wert !== "") {
-        einkaufsliste.push(wert);
-        input.value = "";
-        speicherListe();
-        renderListe();
-      }
-    }
+function renderListe() {
+  const div = document.getElementById("einkaufsliste");
+  div.innerHTML = "<h3>Einkaufsliste</h3>";
+  einkaufsliste.forEach((z,i)=>{
+    const item = document.createElement("div");
+    item.className="zutaten-item";
+    item.innerHTML = `<span>${z}</span><button onclick="removeFromList(${i})">Entfernen</button>`;
+    div.appendChild(item);
+  });
+}
 
-    function removeFromList(index) {
-      einkaufsliste.splice(index, 1);
-      speicherListe();
-      renderListe();
-    }
+function speicherListe() {
+  localStorage.setItem("einkaufsliste", JSON.stringify(einkaufsliste));
+}
 
-    function renderListe() {
-      const div = document.getElementById("einkaufsliste");
-      div.innerHTML = "<h3>Einkaufsliste</h3>";
-      einkaufsliste.forEach((z, i) => {
-        const item = document.createElement("div");
-        item.className = "zutaten-item";
-        item.innerHTML = `
-          <span>${z}</span>
-          <button onclick="removeFromList(${i})">Entfernen</button>
-        `;
-        div.appendChild(item);
-      });
-    }
+// Rezepte anzeigen & suchen
+function renderRezepte(filter="") {
+  const liste = document.getElementById("rezepteListe");
+  liste.innerHTML = "";
+  rezepte.filter(r => r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <h3>${r.name}</h3>
+      <p>Kategorie: ${r.kategorie}</p>
+      <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
+      <button onclick="addToList(${idx})" class="btn-red">Zur Einkaufsliste hinzufügen</button>
+      <button class="${r.link?'btn-green':'btn-grey'}" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
+    `;
+    liste.appendChild(div);
+  });
+}
 
-    function speicherListe() {
-      localStorage.setItem("einkaufsliste", JSON.stringify(einkaufsliste));
-    }
+function sucheRezepte() {
+  const wert = document.getElementById("rezepteSuche").value;
+  renderRezepte(wert);
+}
 
-    // Rezepte anzeigen & suchen
-    function renderRezepte(filter="") {
-      const liste = document.getElementById("rezepteListe");
-      liste.innerHTML = "";
-      rezepte
-        .filter(r => r.name.toLowerCase().includes(filter.toLowerCase()))
-        .forEach((r, idx) => {
-          const div = document.createElement("div");
-          div.className = "card";
-          div.innerHTML = `
-            <h3>${r.name}</h3>
-            <p>Kategorie: ${r.kategorie}</p>
-            <ul>${r.zutaten.map(z => `<li>${z}</li>`).join("")}</ul>
-            <button onclick="addToList(${idx})">Zur Einkaufsliste hinzufügen</button>
-          `;
-          liste.appendChild(div);
-        });
-    }
-
-    function sucheRezepte() {
-      const wert = document.getElementById("rezepteSuche").value;
-      renderRezepte(wert);
-    }
-
-    // Rezept hinzufügen
-    function addRezept() {
-      const passwort = prompt("Bitte Passwort eingeben, um ein neues Rezept hinzuzufügen:");
-      if (passwort !== "leon2005") {
-        alert("Falsches Passwort! Zugriff verweigert.");
-        return;
-      }
-      alert("Rezepte müssen aktuell manuell in die Datei 'rezepte.json' eingetragen werden!");
-    }
-
-    // Initialisierung
-    zeigeSeite("zufall");
-    ladeRezepte();
-  </script>
+// Initialisierung
+zeigeSeite("zufall");
+ladeRezepte();
+</script>
 </body>
 </html>
