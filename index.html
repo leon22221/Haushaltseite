@@ -12,7 +12,7 @@
   nav button:hover { background: #B71C1C; }
   main { padding: 15px; max-width: 1000px; margin: auto; }
   .hidden { display: none; }
-  .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.12); margin-bottom: 20px; color: #333; }
+  .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.12); margin-bottom: 20px; color: #333; position: relative; }
   .card h3 { margin-top: 0; font-size: 26px; font-weight: bold; color: #333; }
   .card p { font-size: 18px; margin: 5px 0 10px 0; color: #333; }
   .zutaten-item { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; padding: 8px 0; font-size: 18px; border-bottom: 1px solid #ddd; color: #333; }
@@ -28,6 +28,18 @@
   .remove-btn { width: 120px; min-width: 120px; padding: 10px; font-size: 16px; background: #E53935; border: none; border-radius: 6px; color: white !important; }
   .checkmark { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 20px; color: #4CAF50; opacity: 0; transition: opacity 0.5s; }
   .show-check { opacity: 1; }
+  .terminanzeige {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: #E53935;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
   @media (max-width: 768px) {
     header { font-size: 32px; padding: 25px; }
     nav { flex-direction: column; }
@@ -83,6 +95,7 @@
 let rezepte = [];
 let backrezepte = [];
 let einkaufsliste = JSON.parse(localStorage.getItem("einkaufsliste")) || [];
+let termine = JSON.parse(localStorage.getItem("termine")) || {};
 
 function zeigeSeite(id) {
   document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
@@ -107,36 +120,22 @@ async function ladeRezepte() {
 }
 
 function parseZutat(zutat) {
-  // Erst checken ob der User schon "x" eingegeben hat
   let matchX = zutat.match(/^([0-9]+)x\s+(.+)$/i);
   if (matchX) {
     return { menge: parseInt(matchX[1]), einheit: "x", name: matchX[2].trim() };
   }
-
-  // Normales Muster für Mengen mit Einheit
   const match = zutat.match(/^([0-9,.]+)?\s*(g|kg|ml|l)?\s*(.*)$/i);
   let menge = 1;
   let einheit = "x";
   let name = zutat.trim();
-
   if (match) {
     menge = match[1] ? parseFloat(match[1].replace(",", ".")) : 1;
     einheit = match[2] || "x";
     name = match[3].trim() || zutat;
-
-    if (einheit.toLowerCase() === "kg") {
-      menge *= 1000; einheit = "g";
-    }
-    if (einheit.toLowerCase() === "l") {
-      menge *= 1000; einheit = "ml";
-    }
+    if (einheit.toLowerCase() === "kg") { menge *= 1000; einheit = "g"; }
+    if (einheit.toLowerCase() === "l") { menge *= 1000; einheit = "ml"; }
   }
-
-  // Sonderfall: Zahl ohne Einheit → immer als Stück ("x") interpretieren
-  if ((match && match[1]) && (!match[2] || match[2] === "")) {
-    einheit = "x";
-  }
-
+  if ((match && match[1]) && (!match[2] || match[2] === "")) { einheit = "x"; }
   return { name, menge, einheit };
 }
 
@@ -156,14 +155,11 @@ function addToList(index, typ="rezepte", button=null) {
 function addManuell() {
   const input = document.getElementById("manuelleZutat");
   let wert = input.value.trim();
-
   if (wert !== "") {
-    // Wenn nur Zahl + Name ohne "x" → automatisch "x" ergänzen
     let ohneX = wert.match(/^([0-9]+)\s+(.+)$/);
     if (ohneX) {
       wert = `${ohneX[1]}x ${ohneX[2]}`;
     }
-
     einkaufsliste.push(wert);
     input.value = "";
     speicherListe();
@@ -190,7 +186,6 @@ function renderListe() {
     if(zusammenfassung[key]) zusammenfassung[key] += menge;
     else zusammenfassung[key] = menge;
   });
-
   Object.entries(zusammenfassung).forEach(([key, menge]) => {
     let [name, einheit] = key.split('|');
     let anzeige = einheit === 'x' ? `${menge}x ${name}` : `${menge}${einheit} ${name}`;
@@ -218,17 +213,57 @@ function zeigeZufallsrezept() {
   `;
 }
 
+// --- Termin-Funktionen ---
+function setTermin(rezeptName) {
+  const datum = prompt("Bitte Datum auswählen (Format: YYYY-MM-DD):");
+  if (!datum) return;
+  const terminDatum = new Date(datum);
+  if (isNaN(terminDatum.getTime())) {
+    alert("Ungültiges Datum!");
+    return;
+  }
+  termine[rezeptName] = datum;
+  localStorage.setItem("termine", JSON.stringify(termine));
+  renderRezepte();
+}
+
+function getDayAbbreviation(datumStr) {
+  const days = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+  const d = new Date(datumStr);
+  return days[d.getDay()];
+}
+
+function isTerminAktiv(datumStr) {
+  const heute = new Date();
+  const termin = new Date(datumStr);
+  const diff = heute - termin;
+  return diff < 24*60*60*1000; // < 1 Tag
+}
+
+// --- Rezepte rendern mit Termin ---
 function renderRezepte(filter="") {
   const liste = document.getElementById("rezepteListe");
   liste.innerHTML = "";
   rezepte.filter(r => r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
     const div = document.createElement("div");
     div.className = "card";
+
+    let terminHTML = "";
+    if(termine[r.name] && isTerminAktiv(termine[r.name])) {
+      const d = new Date(termine[r.name]);
+      terminHTML = `<div class="terminanzeige">${getDayAbbreviation(termine[r.name])}, ${d.getDate()}</div>`;
+    } else if(termine[r.name]) {
+      delete termine[r.name];
+      localStorage.setItem("termine", JSON.stringify(termine));
+    }
+
     div.innerHTML = `
+      ${terminHTML}
       <h3>${r.name}</h3>
       ${r.kategorie ? `<p><strong>Kategorie:</strong> ${r.kategorie}</p>` : ''}
       <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
       <button onclick="addToList(${idx}, 'rezepte', this)" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
+      <button class="btn-green action-btn" onclick="setTermin('${r.name}')">Terminieren für</button>
       <button class="${r.link?'btn-green':'btn-grey'} action-btn" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
     `;
     liste.appendChild(div);
