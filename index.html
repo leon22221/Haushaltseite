@@ -5,49 +5,28 @@
 <title>Digitales Rezeptebuch</title>
 <style>
   body { font-family: "Segoe UI", Tahoma, sans-serif; margin: 0; background: #f4f6f9; color: #333; }
-  strong, a, li, span, button { color: inherit; text-decoration: none; }
   header { background: #E53935; color: white; padding: 20px; text-align: center; font-size: 28px; }
   nav { display: flex; justify-content: space-around; background: #C62828; flex-wrap: wrap; }
-  nav button { flex: 1 1 25%; margin: 2px; background: #C62828; border: none; color: white !important; padding: 20px 0; font-size: 20px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+  nav button { flex: 1 1 25%; margin: 2px; background: #C62828; border: none; color: white; padding: 20px 0; font-size: 20px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
   nav button:hover { background: #B71C1C; }
   main { padding: 15px; max-width: 1000px; margin: auto; }
   .hidden { display: none; }
-  .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.12); margin-bottom: 20px; color: #333; position: relative; }
-  .card h3 { margin-top: 0; font-size: 26px; font-weight: bold; color: #333; }
-  .card p { font-size: 18px; margin: 5px 0 10px 0; color: #333; }
-  .zutaten-item { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; padding: 8px 0; font-size: 18px; border-bottom: 1px solid #ddd; color: #333; }
-  .zutaten-item span { display: inline-block; }
-  .preis { width: 80px; text-align: center; margin-right: 10px; }
-  input, textarea, select { width: 100%; padding: 16px; margin: 8px 0; font-size: 18px; border-radius: 6px; border: 1px solid #ccc; color: #333; }
-  button.action-btn, .remove-btn { font-family: inherit; color: white !important; text-decoration: none; cursor: pointer; }
-  button.action-btn { width: 100%; padding: 18px 0; font-size: 20px; border-radius: 8px; margin-top: 10px; position: relative; }
-  .btn-red { background: #E53935; }
-  .btn-red:hover { background: #C62828; }
-  .btn-green { background: #4CAF50; }
-  .btn-green:hover { background-color: #45A049; }
+  .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.12); margin-bottom: 20px; position: relative; }
+  .card h3 { margin-top: 0; font-size: 26px; font-weight: bold; }
+  input, button, select { font-size: 18px; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ccc; }
+  .action-btn { width: 100%; cursor: pointer; color: white; border: none; border-radius: 8px; padding: 12px; font-weight: bold; }
+  .btn-red { background: #E53935; } .btn-red:hover { background: #C62828; }
+  .btn-green { background: #4CAF50; } .btn-green:hover { background: #45A049; }
   .btn-grey { background: #9E9E9E; cursor: default; }
-  .remove-btn { width: 120px; min-width: 120px; padding: 10px; font-size: 16px; background: #E53935; border: none; border-radius: 6px; color: white !important; }
-  .checkmark { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 20px; color: #4CAF50; opacity: 0; transition: opacity 0.5s; }
-  .show-check { opacity: 1; }
+  .zutaten-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding: 5px 0; }
+  .preis { width: 80px; text-align: center; margin-right: 10px; }
+  .remove-btn { background: #E53935; border: none; color: white; border-radius: 6px; padding: 5px 10px; cursor: pointer; }
   .termin { position: absolute; top: 10px; right: 10px; background: #ffeb3b; color: #333; padding: 5px 10px; border-radius: 6px; font-weight: bold; }
-  @media (max-width: 768px) {
-    header { font-size: 32px; padding: 25px; }
-    nav { flex-direction: column; }
-    nav button { font-size: 22px; padding: 22px 0; }
-    .card { padding: 28px; font-size: 20px; }
-    .card h3 { font-size: 30px; margin-bottom: 12px; }
-    .card p { font-size: 20px; }
-    .zutaten-item { font-size: 20px; padding: 10px 0; }
-    input, textarea, select { font-size: 20px; padding: 18px; }
-    button.action-btn { font-size: 22px; padding: 20px 0; }
-    .remove-btn { width: 120px; min-width: 120px; }
-  }
 </style>
 </head>
 <body>
-<header>
-  <h1>Digitales Rezeptebuch</h1>
-</header>
+
+<header><h1>Digitales Rezeptebuch</h1></header>
 
 <nav>
   <button onclick="zeigeSeite('zufall')">Zufallsrezept</button>
@@ -86,18 +65,18 @@
 let rezepte = [];
 let backrezepte = [];
 let einkaufsliste = JSON.parse(localStorage.getItem("einkaufsliste")) || [];
-let terminierung = {}; // { rezeptName: 'YYYY-MM-DD' }
+let terminierung = {}; 
 
 function zeigeSeite(id) {
   document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
-  if (id === "rezepte") renderRezepte();
-  if (id === "backrezepte") renderBackrezepte();
-  if (id === "liste") renderListe();
+  if(id==='rezepte') renderRezepte();
+  if(id==='backrezepte') renderBackrezepte();
+  if(id==='liste') renderListe();
 }
 
-async function ladeRezepte() {
-  try {
+async function ladeRezepte(){
+  try{
     const res1 = await fetch("rezepte.json");
     rezepte = await res1.json();
     const res2 = await fetch("backrezepte.json");
@@ -105,189 +84,161 @@ async function ladeRezepte() {
     renderRezepte();
     renderBackrezepte();
     zeigeZufallsrezept();
-  } catch (err) {
-    console.error("Fehler beim Laden der Rezepte:", err);
-  }
+  }catch(err){ console.error(err); }
 }
 
-function parseZutat(zutat) {
+function parseZutat(zutat){
   let matchX = zutat.match(/^([0-9]+)x\s+(.+)$/i);
-  if (matchX) return { menge: parseInt(matchX[1]), einheit: "x", name: matchX[2].trim() };
-
+  if(matchX) return { menge: parseInt(matchX[1]), einheit:"x", name:matchX[2].trim() };
   const match = zutat.match(/^([0-9,.]+)?\s*(g|kg|ml|l)?\s*(.*)$/i);
-  let menge = 1, einheit = "x", name = zutat.trim();
-  if (match) {
-    menge = match[1] ? parseFloat(match[1].replace(",", ".")) : 1;
-    einheit = match[2] || "x";
-    name = match[3].trim() || zutat;
-    if (einheit.toLowerCase() === "kg") { menge *= 1000; einheit = "g"; }
-    if (einheit.toLowerCase() === "l") { menge *= 1000; einheit = "ml"; }
-    if ((match[1]) && (!match[2] || match[2] === "")) einheit = "x";
+  let menge=1, einheit="x", name=zutat.trim();
+  if(match){
+    menge=match[1]?parseFloat(match[1].replace(",", ".")):1;
+    einheit=match[2]||"x";
+    name=match[3].trim()||zutat;
+    if(einheit.toLowerCase()==="kg") { menge*=1000; einheit="g"; }
+    if(einheit.toLowerCase()==="l") { menge*=1000; einheit="ml"; }
+    if(match[1] && (!match[2] || match[2]==="")) einheit="x";
   }
-  return { name, menge, einheit };
+  return {name, menge, einheit};
 }
 
-function addToList(index, typ="rezepte", button=null) {
-  const quelle = typ === "rezepte" ? rezepte : backrezepte;
-  quelle[index].zutaten.forEach(z => einkaufsliste.push(z));
-  speicherListe();
-  renderListe();
-  if(button){
-    const check = document.createElement('span');
-    check.className = 'checkmark show-check';
-    check.innerHTML = '✔';
-    button.appendChild(check);
-  }
+function addToList(index, typ="rezepte"){
+  const quelle = typ==="rezepte"? rezepte:backrezepte;
+  quelle[index].zutaten.forEach(z=> einkaufsliste.push(z));
+  speicherListe(); renderListe();
 }
 
-function addManuell() {
-  const input = document.getElementById("manuelleZutat");
-  let wert = input.value.trim();
-  if (wert !== "") {
-    let ohneX = wert.match(/^([0-9]+)\s+(.+)$/);
-    if (ohneX) wert = `${ohneX[1]}x ${ohneX[2]}`;
-    einkaufsliste.push(wert);
-    input.value = "";
-    speicherListe();
-    renderListe();
-  }
+function addManuell(){
+  const input=document.getElementById("manuelleZutat");
+  let wert=input.value.trim();
+  if(!wert) return;
+  let match=wert.match(/^([0-9]+)\s+(.+)$/);
+  if(match) wert=`${match[1]}x ${match[2]}`;
+  einkaufsliste.push(wert);
+  input.value="";
+  speicherListe(); renderListe();
 }
 
-function removeFromListByName(name, einheit) {
-  einkaufsliste = einkaufsliste.filter(z => {
-    const parsed = parseZutat(z);
-    return !(parsed.name.toLowerCase() === name.toLowerCase() && parsed.einheit === einheit);
+function removeFromListByName(name, einheit){
+  einkaufsliste=einkaufsliste.filter(z=>{
+    const p=parseZutat(z);
+    return !(p.name.toLowerCase()===name.toLowerCase() && p.einheit===einheit);
   });
-  speicherListe();
-  renderListe();
+  speicherListe(); renderListe();
 }
 
-function berechnePreis(name, menge=1, einheit="x") {
-  name = name.toLowerCase();
-  let zutat = Object.keys(zutatPreise).find(z => z.toLowerCase() === name);
-  if (!zutat) return 0;
-  const data = zutatPreise[zutat];
-  let faktor = destatisIndex[data.gruppe] || 1;
-  let mengeInBasis = menge;
-  if (einheit === data.einheit) {}
-  else if (einheit === "kg" && data.einheit==="g") mengeInBasis *= 1000;
-  else if (einheit === "l" && data.einheit==="ml") mengeInBasis *= 1000;
-  return (data.preis / data.menge) * mengeInBasis * faktor;
+function berechnePreis(name, menge=1, einheit="x"){
+  name=name.toLowerCase();
+  let zutat=Object.keys(zutatPreise).find(z=> z.toLowerCase()===name);
+  if(!zutat) return 0;
+  const data=zutatPreise[zutat];
+  let faktor=destatisIndex[data.gruppe]||1;
+  let mengeInBasis=menge;
+  if(einheit==="kg" && data.einheit==="g") mengeInBasis*=1000;
+  if(einheit==="l" && data.einheit==="ml") mengeInBasis*=1000;
+  return (data.preis/data.menge)*mengeInBasis*faktor;
 }
 
-function renderListe() {
-  const div = document.getElementById("einkaufsliste");
-  div.innerHTML = "<h3>Einkaufsliste</h3>";
-  let zusammenfassung = {};
-  let gesamt = 0;
-  einkaufsliste.forEach(z => {
-    const {name, menge, einheit} = parseZutat(z);
-    const key = name.toLowerCase() + '|' + einheit;
-    if(zusammenfassung[key]) zusammenfassung[key] += menge;
-    else zusammenfassung[key] = menge;
+function renderListe(){
+  const div=document.getElementById("einkaufsliste");
+  div.innerHTML="<h3>Einkaufsliste</h3>";
+  let zusammenfassung={}, gesamt=0;
+  einkaufsliste.forEach(z=>{
+    const {name, menge, einheit}=parseZutat(z);
+    const key=name.toLowerCase()+"|"+einheit;
+    zusammenfassung[key]=zusammenfassung[key]?zusammenfassung[key]+menge:menge;
   });
-
-  Object.entries(zusammenfassung).forEach(([key, menge]) => {
-    let [name, einheit] = key.split('|');
-    let anzeige = einheit === 'x' ? `${menge}x ${name}` : `${menge}${einheit} ${name}`;
-    let preis = berechnePreis(name, menge, einheit);
-    gesamt += preis;
-
-    const item = document.createElement("div");
-    item.className = "zutaten-item";
-    item.innerHTML = `
-      <span>${anzeige}</span>
-      <span class="preis">${preis.toFixed(2)} €</span>
-      <button class='remove-btn' onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>
-    `;
+  Object.entries(zusammenfassung).forEach(([key, menge])=>{
+    let [name, einheit]=key.split("|");
+    let anzeige=einheit==="x"?`${menge}x ${name}`:`${menge}${einheit} ${name}`;
+    let preis=berechnePreis(name, menge, einheit);
+    gesamt+=preis;
+    const item=document.createElement("div");
+    item.className="zutaten-item";
+    item.innerHTML=`<span>${anzeige}</span><span class="preis">${preis.toFixed(2)} €</span><button class="remove-btn" onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>`;
     div.appendChild(item);
   });
-
-  const gesamtDiv = document.createElement("div");
-  gesamtDiv.style.fontWeight = "bold";
-  gesamtDiv.style.marginTop = "10px";
-  gesamtDiv.textContent = `Gesamt: ${gesamt.toFixed(2)} €`;
+  const gesamtDiv=document.createElement("div");
+  gesamtDiv.style.fontWeight="bold"; gesamtDiv.style.marginTop="10px";
+  gesamtDiv.textContent=`Gesamt: ${gesamt.toFixed(2)} €`;
   div.appendChild(gesamtDiv);
 }
 
-function zeigeZufallsrezept() {
-  const alleRezepte = rezepte.concat(backrezepte);
-  if (alleRezepte.length === 0) return;
-  const zufall = Math.floor(Math.random() * alleRezepte.length);
-  const r = alleRezepte[zufall];
-  const container = document.getElementById("zufallsrezept");
-  container.innerHTML = `
+function zeigeZufallsrezept(){
+  const alleRezepte=rezepte.concat(backrezepte);
+  if(!alleRezepte.length) return;
+  const zufall=Math.floor(Math.random()*alleRezepte.length);
+  const r=alleRezepte[zufall];
+  const container=document.getElementById("zufallsrezept");
+  container.innerHTML=`
     <h3>${r.name}</h3>
-    ${r.kategorie ? `<p><strong>Kategorie:</strong> ${r.kategorie}</p>` : ''}
-    ${r.zeit ? `<p><strong>Zubereitungszeit:</strong> ${r.zeit}</p>` : ''}
-    <h4>Zutaten:</h4>
-    <ul>${r.zutaten.map(z => `<li>${z}</li>`).join('')}</ul>
-    <button class='btn-red action-btn' onclick='addToList(${rezepte.indexOf(r)}, "rezepte", this)'>Zur Einkaufsliste hinzufügen</button>
+    ${r.kategorie?`<p><strong>Kategorie:</strong> ${r.kategorie}</p>`:''}
+    ${r.zeit?`<p><strong>Zubereitungszeit:</strong> ${r.zeit}</p>`:''}
+    <h4>Zutaten:</h4><ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
+    <button class='btn-red action-btn' onclick='addToList(${rezepte.indexOf(r)}, "rezepte")'>Zur Einkaufsliste hinzufügen</button>
     <button class='${r.link?'btn-green':'btn-grey'} action-btn' ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
-    <button class='btn-green action-btn' onclick='terminiereRezept("${r.name}", this)'>Terminieren für...</button>
-    ${terminierung[r.name] && new Date(terminierung[r.name]) > new Date(new Date().getTime()-24*60*60*1000) ? `<div class="termin">${formatTermin(terminierung[r.name])}</div>` : ''}
+    <button class='btn-green action-btn' onclick='terminiereRezept("${r.name}")'>Terminieren für...</button>
+    ${terminierung[r.name] ? `<div class="termin">${formatTermin(terminierung[r.name])}</div>` : ''}
   `;
 }
 
-function formatTermin(dateStr) {
-  const date = new Date(dateStr);
-  const options = { day: '2-digit', month: '2-digit' };
-  return date.toLocaleDateString('de-DE', options);
+function formatTermin(dateStr){
+  const date=new Date(dateStr);
+  return date.toLocaleDateString("de-DE",{day:"2-digit", month:"2-digit"});
 }
 
-function terminiereRezept(name, button) {
-  const datum = prompt("Datum eingeben (TT-MM):");
-  if (!datum) return;
-  const [tag, monat] = datum.split('-').map(Number);
-  const jetzt = new Date();
-  const jahr = jetzt.getFullYear();
-  const dateObj = new Date(jahr, monat-1, tag);
-  terminierung[name] = dateObj.toISOString();
+function terminiereRezept(name){
+  const datum=prompt("Datum eingeben (TT-MM):");
+  if(!datum) return;
+  const [tag, monat]=datum.split("-").map(Number);
+  const jahr=(new Date()).getFullYear();
+  terminierung[name]=new Date(jahr, monat-1, tag).toISOString();
   zeigeZufallsrezept();
 }
 
-function renderRezepte(filter="") {
-  const liste = document.getElementById("rezepteListe");
-  liste.innerHTML = "";
-  rezepte.filter(r => r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
+function renderRezepte(filter=""){
+  const liste=document.getElementById("rezepteListe");
+  liste.innerHTML="";
+  rezepte.filter(r=>r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
+    const div=document.createElement("div");
+    div.className="card";
+    div.innerHTML=`
       <h3>${r.name}</h3>
-      ${r.kategorie ? `<p><strong>Kategorie:</strong> ${r.kategorie}</p>` : ''}
+      ${r.kategorie?`<p><strong>Kategorie:</strong> ${r.kategorie}</p>`:''}
       <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
-      <button onclick="addToList(${idx}, 'rezepte', this)" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
+      <button class="btn-red action-btn" onclick="addToList(${idx}, 'rezepte')">Zur Einkaufsliste hinzufügen</button>
       <button class="${r.link?'btn-green':'btn-grey'} action-btn" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
-      <button class='btn-green action-btn' onclick='terminiereRezept("${r.name}", this)'>Terminieren für...</button>
-      ${terminierung[r.name] && new Date(terminierung[r.name]) > new Date(new Date().getTime()-24*60*60*1000) ? `<div class="termin">${formatTermin(terminierung[r.name])}</div>` : ''}
+      <button class='btn-green action-btn' onclick='terminiereRezept("${r.name}")'>Terminieren für...</button>
+      ${terminierung[r.name]?`<div class="termin">${formatTermin(terminierung[r.name])}</div>`:''}
     `;
     liste.appendChild(div);
   });
 }
 
-function sucheRezepte() { renderRezepte(document.getElementById("rezepteSuche").value); }
+function sucheRezepte(){ renderRezepte(document.getElementById("rezepteSuche").value); }
 
-function renderBackrezepte(filter="") {
-  const liste = document.getElementById("backrezepteListe");
-  liste.innerHTML = "";
-  backrezepte.filter(r => r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
+function renderBackrezepte(filter=""){
+  const liste=document.getElementById("backrezepteListe");
+  liste.innerHTML="";
+  backrezepte.filter(r=>r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
+    const div=document.createElement("div");
+    div.className="card";
+    div.innerHTML=`
       <h3>${r.name}</h3>
       <p><strong>Zubereitungszeit:</strong> ${r.zeit}</p>
       <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
-      <button onclick="addToList(${idx}, 'backrezepte', this)" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
+      <button class="btn-red action-btn" onclick="addToList(${idx}, 'backrezepte')">Zur Einkaufsliste hinzufügen</button>
       <button class="${r.link?'btn-green':'btn-grey'} action-btn" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
     `;
     liste.appendChild(div);
   });
 }
 
-function sucheBackrezepte() { renderBackrezepte(document.getElementById("backrezepteSuche").value); }
-function speicherListe() { localStorage.setItem("einkaufsliste", JSON.stringify(einkaufsliste)); }
+function sucheBackrezepte(){ renderBackrezepte(document.getElementById("backrezepteSuche").value); }
 
-// Init
+function speicherListe(){ localStorage.setItem("einkaufsliste", JSON.stringify(einkaufsliste)); }
+
 zeigeSeite("zufall");
 ladeRezepte();
 </script>
