@@ -17,6 +17,7 @@
   .card p { font-size: 18px; margin: 5px 0 10px 0; color: #333; }
   .zutaten-item { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; padding: 8px 0; font-size: 18px; border-bottom: 1px solid #ddd; color: #333; }
   .zutaten-item span { display: inline-block; }
+  .preis { width: 80px; text-align: center; margin-right: 10px; }
   input, textarea, select { width: 100%; padding: 16px; margin: 8px 0; font-size: 18px; border-radius: 6px; border: 1px solid #ccc; color: #333; }
   button.action-btn, .remove-btn { font-family: inherit; color: white !important; text-decoration: none; cursor: pointer; }
   button.action-btn { width: 100%; padding: 18px 0; font-size: 20px; border-radius: 8px; margin-top: 10px; position: relative; }
@@ -80,9 +81,7 @@
 </section>
 </main>
 
-<!-- Zutatenpreise einbinden -->
 <script src="zutatenpreise.js"></script>
-
 <script>
 let rezepte = [];
 let backrezepte = [];
@@ -114,6 +113,7 @@ async function ladeRezepte() {
 function parseZutat(zutat) {
   let matchX = zutat.match(/^([0-9]+)x\s+(.+)$/i);
   if (matchX) return { menge: parseInt(matchX[1]), einheit: "x", name: matchX[2].trim() };
+
   const match = zutat.match(/^([0-9,.]+)?\s*(g|kg|ml|l)?\s*(.*)$/i);
   let menge = 1, einheit = "x", name = zutat.trim();
   if (match) {
@@ -164,14 +164,15 @@ function removeFromListByName(name, einheit) {
 
 function berechnePreis(name, menge=1, einheit="x") {
   name = name.toLowerCase();
-  const zutat = Object.keys(zutatPreise).find(z => z.toLowerCase() === name || (z.toLowerCase().includes("mehl") && name.includes("mehl")));
+  let zutat = Object.keys(zutatPreise).find(z => z.toLowerCase() === name);
   if (!zutat) return 0;
   const data = zutatPreise[zutat];
+  let faktor = destatisIndex[data.gruppe] || 1;
   let mengeInBasis = menge;
   if (einheit === data.einheit) {}
   else if (einheit === "kg" && data.einheit==="g") mengeInBasis *= 1000;
   else if (einheit === "l" && data.einheit==="ml") mengeInBasis *= 1000;
-  return (data.preis / data.menge) * mengeInBasis;
+  return (data.preis / data.menge) * mengeInBasis * faktor;
 }
 
 function renderListe() {
@@ -191,9 +192,14 @@ function renderListe() {
     let anzeige = einheit === 'x' ? `${menge}x ${name}` : `${menge}${einheit} ${name}`;
     let preis = berechnePreis(name, menge, einheit);
     gesamt += preis;
+
     const item = document.createElement("div");
-    item.className="zutaten-item";
-    item.innerHTML = `<span>${anzeige}</span><span>${preis.toFixed(2)} €</span><button class='remove-btn' onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>`;
+    item.className = "zutaten-item";
+    item.innerHTML = `
+      <span>${anzeige}</span>
+      <span class="preis">${preis.toFixed(2)} €</span>
+      <button class='remove-btn' onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>
+    `;
     div.appendChild(item);
   });
 
@@ -225,17 +231,18 @@ function zeigeZufallsrezept() {
 
 function formatTermin(dateStr) {
   const date = new Date(dateStr);
-  return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+  const options = { day: '2-digit', month: '2-digit' };
+  return date.toLocaleDateString('de-DE', options);
 }
 
 function terminiereRezept(name, button) {
   const datum = prompt("Datum eingeben (TT-MM):");
   if (!datum) return;
-  const [tag, monat] = datum.split("-").map(n=>parseInt(n));
-  const heute = new Date();
-  const year = heute.getFullYear();
-  const neueDate = new Date(year, monat-1, tag);
-  terminierung[name] = neueDate.toISOString();
+  const [tag, monat] = datum.split('-').map(Number);
+  const jetzt = new Date();
+  const jahr = jetzt.getFullYear();
+  const dateObj = new Date(jahr, monat-1, tag);
+  terminierung[name] = dateObj.toISOString();
   zeigeZufallsrezept();
 }
 
@@ -259,6 +266,7 @@ function renderRezepte(filter="") {
 }
 
 function sucheRezepte() { renderRezepte(document.getElementById("rezepteSuche").value); }
+
 function renderBackrezepte(filter="") {
   const liste = document.getElementById("backrezepteListe");
   liste.innerHTML = "";
@@ -275,6 +283,7 @@ function renderBackrezepte(filter="") {
     liste.appendChild(div);
   });
 }
+
 function sucheBackrezepte() { renderBackrezepte(document.getElementById("backrezepteSuche").value); }
 function speicherListe() { localStorage.setItem("einkaufsliste", JSON.stringify(einkaufsliste)); }
 
