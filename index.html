@@ -91,14 +91,12 @@
 </section>
 </main>
 
-<script src="zutatenpreise.js"></script>
 <script>
 let rezepte = [];
 let backrezepte = [];
 let einkaufsliste = JSON.parse(localStorage.getItem("einkaufsliste")) || [];
 let termine = JSON.parse(localStorage.getItem("termine")) || {};
 
-// --- Navigation ---
 function zeigeSeite(id) {
   document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
@@ -107,7 +105,6 @@ function zeigeSeite(id) {
   if (id === "liste") renderListe();
 }
 
-// --- Rezepte laden ---
 async function ladeRezepte() {
   try {
     const res1 = await fetch("rezepte.json");
@@ -122,176 +119,189 @@ async function ladeRezepte() {
   }
 }
 
-// --- Zutat parsen ---
 function parseZutat(zutat) {
   let matchX = zutat.match(/^([0-9]+)x\s+(.+)$/i);
-  if (matchX) return { menge: parseInt(matchX[1]), einheit: "x", name: matchX[2].trim() };
+  if (matchX) {
+    return { menge: parseInt(matchX[1]), einheit: "x", name: matchX[2].trim() };
+  }
   const match = zutat.match(/^([0-9,.]+)?\s*(g|kg|ml|l)?\s*(.*)$/i);
-  let menge = 1, einheit = "x", name = zutat.trim();
+  let menge = 1;
+  let einheit = "x";
+  let name = zutat.trim();
   if (match) {
     menge = match[1] ? parseFloat(match[1].replace(",", ".")) : 1;
     einheit = match[2] || "x";
     name = match[3].trim() || zutat;
-    if(einheit.toLowerCase() === "kg") { menge *= 1000; einheit="g"; }
-    if(einheit.toLowerCase() === "l") { menge *= 1000; einheit="ml"; }
-    if(match[1] && (!match[2] || match[2]==="")) einheit="x";
+    if (einheit.toLowerCase() === "kg") { menge *= 1000; einheit = "g"; }
+    if (einheit.toLowerCase() === "l") { menge *= 1000; einheit = "ml"; }
   }
+  if ((match && match[1]) && (!match[2] || match[2] === "")) { einheit = "x"; }
   return { name, menge, einheit };
 }
 
-// --- Einkaufsliste ---
 function addToList(index, typ="rezepte", button=null) {
-  const quelle = typ==="rezepte"?rezepte:backrezepte;
-  quelle[index].zutaten.forEach(z=>einkaufsliste.push(z));
+  const quelle = typ === "rezepte" ? rezepte : backrezepte;
+  quelle[index].zutaten.forEach(z => einkaufsliste.push(z));
   speicherListe();
   renderListe();
   if(button){
     const check = document.createElement('span');
-    check.className='checkmark show-check';
-    check.innerHTML='✔';
+    check.className = 'checkmark show-check';
+    check.innerHTML = '✔';
     button.appendChild(check);
-    setTimeout(()=>check.remove(),1000);
   }
 }
 
 function addManuell() {
-  const input=document.getElementById("manuelleZutat");
-  let wert=input.value.trim();
-  if(wert!==""){
+  const input = document.getElementById("manuelleZutat");
+  let wert = input.value.trim();
+  if (wert !== "") {
+    let ohneX = wert.match(/^([0-9]+)\s+(.+)$/);
+    if (ohneX) {
+      wert = `${ohneX[1]}x ${ohneX[2]}`;
+    }
     einkaufsliste.push(wert);
-    input.value="";
+    input.value = "";
     speicherListe();
     renderListe();
   }
 }
 
-function removeFromListByName(name,einheit){
-  einkaufsliste=einkaufsliste.filter(z=>{
-    const p=parseZutat(z);
-    return !(p.name.toLowerCase()===name.toLowerCase() && p.einheit===einheit);
+function removeFromListByName(name, einheit) {
+  einkaufsliste = einkaufsliste.filter(z => {
+    const parsed = parseZutat(z);
+    return !(parsed.name.toLowerCase() === name.toLowerCase() && parsed.einheit === einheit);
   });
   speicherListe();
   renderListe();
 }
 
-// --- Preisberechnung ---
-function berechnePreis(name,menge=1,einheit="x"){
-  name=name.toLowerCase();
-  let key=Object.keys(zutatenpreise).find(z=>z.toLowerCase()===name || z.toLowerCase().includes(name));
-  if(!key) return 0;
-  const data=zutatenpreise[key];
-  let mengeBasis=menge;
-  if(einheit.toLowerCase()==="kg" && data.einheit.toLowerCase()==="g") mengeBasis*=1000;
-  if(einheit.toLowerCase()==="l" && data.einheit.toLowerCase()==="ml") mengeBasis*=1000;
-  return (data.preis/data.menge)*mengeBasis;
-}
-
-// --- Einkaufsliste rendern mit Preisen ---
-function renderListe(){
-  const div=document.getElementById("einkaufsliste");
-  div.innerHTML="<h3>Einkaufsliste</h3>";
-  let zusammenfassung={};
-  let gesamt=0;
-  einkaufsliste.forEach(z=>{
-    const {name,menge,einheit}=parseZutat(z);
-    const key=name.toLowerCase()+"|"+einheit;
-    if(zusammenfassung[key]) zusammenfassung[key]+=menge;
-    else zusammenfassung[key]=menge;
+function renderListe() {
+  const div = document.getElementById("einkaufsliste");
+  div.innerHTML = "<h3>Einkaufsliste</h3>";
+  let zusammenfassung = {};
+  einkaufsliste.forEach(z => {
+    const {name, menge, einheit} = parseZutat(z);
+    const key = name.toLowerCase() + '|' + einheit;
+    if(zusammenfassung[key]) zusammenfassung[key] += menge;
+    else zusammenfassung[key] = menge;
   });
-  Object.entries(zusammenfassung).forEach(([key,menge])=>{
-    let [name,einheit]=key.split('|');
-    let anzeige=einheit==='x'?`${menge}x ${name}`:`${menge}${einheit} ${name}`;
-    let preis=berechnePreis(name,menge,einheit);
-    gesamt+=preis;
-    const item=document.createElement("div");
+  Object.entries(zusammenfassung).forEach(([key, menge]) => {
+    let [name, einheit] = key.split('|');
+    let anzeige = einheit === 'x' ? `${menge}x ${name}` : `${menge}${einheit} ${name}`;
+    const item = document.createElement("div");
     item.className="zutaten-item";
-    item.innerHTML=`<span>${anzeige}</span><span class="preis">${preis.toFixed(2)} €</span><button class='remove-btn' onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>`;
+    item.innerHTML = `<span>${anzeige}</span><button class='remove-btn' onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>`;
     div.appendChild(item);
   });
-  const gesamtDiv=document.createElement("div");
-  gesamtDiv.style.fontWeight="bold";
-  gesamtDiv.style.marginTop="10px";
-  gesamtDiv.textContent=`Gesamt: ${gesamt.toFixed(2)} €`;
-  div.appendChild(gesamtDiv);
 }
 
-// --- Zufallsrezept ---
-function zeigeZufallsrezept(){
-  const alleRezepte=rezepte.concat(backrezepte);
-  if(alleRezepte.length===0) return;
-  const zufall=Math.floor(Math.random()*alleRezepte.length);
-  const r=alleRezepte[zufall];
-  const container=document.getElementById("zufallsrezept");
-  container.innerHTML=`
+function zeigeZufallsrezept() {
+  const alleRezepte = rezepte.concat(backrezepte);
+  if (alleRezepte.length === 0) return;
+  const zufall = Math.floor(Math.random() * alleRezepte.length);
+  const r = alleRezepte[zufall];
+  const container = document.getElementById("zufallsrezept");
+  container.innerHTML = `
     <h3>${r.name}</h3>
-    ${r.kategorie?`<p><strong>Kategorie:</strong> ${r.kategorie}</p>`:''}
-    ${r.zeit?`<p><strong>Zubereitungszeit:</strong> ${r.zeit}</p>`:''}
+    ${r.kategorie ? `<p><strong>Kategorie:</strong> ${r.kategorie}</p>` : ''}
+    ${r.zeit ? `<p><strong>Zubereitungszeit:</strong> ${r.zeit}</p>` : ''}
     <h4>Zutaten:</h4>
-    <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join('')}</ul>
-    <button class='btn-red action-btn' onclick='addToList(${rezepte.indexOf(r)},"rezepte",this)'>Zur Einkaufsliste hinzufügen</button>
+    <ul>${r.zutaten.map(z => `<li>${z}</li>`).join('')}</ul>
+    <button class='btn-red action-btn' onclick='addToList(${rezepte.indexOf(r)}, "rezepte", this)'>Zur Einkaufsliste hinzufügen</button>
     <button class='${r.link?'btn-green':'btn-grey'} action-btn' ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
-    <button class='btn-green action-btn' onclick='setTermin("${r.name}")'>Terminieren für</button>
-    ${termine[r.name]?`<div class="terminanzeige">${termine[r.name]}</div>`:''}
   `;
 }
 
-// --- Terminierung TT-MM ---
-function setTermin(rezeptName){
-  const datum=prompt("Datum eingeben (TT-MM):");
-  if(!datum) return;
-  const [tag,monat]=datum.split("-").map(Number);
-  if(!tag || !monat || tag<1 || tag>31 || monat<1 || monat>12){ alert("Ungültiges Datum"); return;}
-  termine[rezeptName]=datum;
-  localStorage.setItem("termine",JSON.stringify(termine));
+// --- Termin-Funktionen ---
+function setTermin(rezeptName) {
+  const datum = prompt("Bitte Datum auswählen (Format: YYYY-MM-DD):");
+  if (!datum) return;
+  const terminDatum = new Date(datum);
+  if (isNaN(terminDatum.getTime())) {
+    alert("Ungültiges Datum!");
+    return;
+  }
+  termine[rezeptName] = datum;
+  localStorage.setItem("termine", JSON.stringify(termine));
   renderRezepte();
 }
 
-// --- Rezepte rendern ---
-function renderRezepte(filter=""){
-  const liste=document.getElementById("rezepteListe");
-  liste.innerHTML="";
-  rezepte.filter(r=>r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
-    const div=document.createElement("div");
-    div.className="card";
-    let terminHTML="";
-    if(termine[r.name]) terminHTML=`<div class="terminanzeige">${termine[r.name]}</div>`;
-    div.innerHTML=`
+function getDayAbbreviation(datumStr) {
+  const days = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+  const d = new Date(datumStr);
+  return days[d.getDay()];
+}
+
+function isTerminAktiv(datumStr) {
+  const heute = new Date();
+  const termin = new Date(datumStr);
+  const diff = heute - termin;
+  return diff < 24*60*60*1000; // < 1 Tag
+}
+
+// --- Rezepte rendern mit Termin ---
+function renderRezepte(filter="") {
+  const liste = document.getElementById("rezepteListe");
+  liste.innerHTML = "";
+  rezepte.filter(r => r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
+    const div = document.createElement("div");
+    div.className = "card";
+
+    let terminHTML = "";
+    if(termine[r.name] && isTerminAktiv(termine[r.name])) {
+      const d = new Date(termine[r.name]);
+      terminHTML = `<div class="terminanzeige">${getDayAbbreviation(termine[r.name])}, ${d.getDate()}</div>`;
+    } else if(termine[r.name]) {
+      delete termine[r.name];
+      localStorage.setItem("termine", JSON.stringify(termine));
+    }
+
+    div.innerHTML = `
       ${terminHTML}
       <h3>${r.name}</h3>
-      ${r.kategorie?`<p><strong>Kategorie:</strong> ${r.kategorie}</p>`:''}
+      ${r.kategorie ? `<p><strong>Kategorie:</strong> ${r.kategorie}</p>` : ''}
       <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
-      <button onclick="addToList(${idx},'rezepte',this)" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
-      <button class="btn-green action-btn" onclick='setTermin("${r.name}")'>Terminieren für</button>
-      <button class='${r.link?'btn-green':'btn-grey'} action-btn' ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
+      <button onclick="addToList(${idx}, 'rezepte', this)" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
+      <button class="btn-green action-btn" onclick="setTermin('${r.name}')">Terminieren für</button>
+      <button class="${r.link?'btn-green':'btn-grey'} action-btn" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
     `;
     liste.appendChild(div);
   });
 }
 
-function sucheRezepte(){ renderRezepte(document.getElementById("rezepteSuche").value); }
+function sucheRezepte() {
+  const wert = document.getElementById("rezepteSuche").value;
+  renderRezepte(wert);
+}
 
-function renderBackrezepte(filter=""){
-  const liste=document.getElementById("backrezepteListe");
-  liste.innerHTML="";
-  backrezepte.filter(r=>r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
-    const div=document.createElement("div");
-    div.className="card";
-    div.innerHTML=`
+function renderBackrezepte(filter="") {
+  const liste = document.getElementById("backrezepteListe");
+  liste.innerHTML = "";
+  backrezepte.filter(r => r.name.toLowerCase().includes(filter.toLowerCase())).forEach((r,idx)=>{
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
       <h3>${r.name}</h3>
       <p><strong>Zubereitungszeit:</strong> ${r.zeit}</p>
       <ul>${r.zutaten.map(z=>`<li>${z}</li>`).join("")}</ul>
-      <button onclick="addToList(${idx},'backrezepte',this)" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
-      <button class='${r.link?'btn-green':'btn-grey'} action-btn' ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
+      <button onclick="addToList(${idx}, 'backrezepte', this)" class="btn-red action-btn">Zur Einkaufsliste hinzufügen</button>
+      <button class="${r.link?'btn-green':'btn-grey'} action-btn" ${r.link?`onclick="window.open('${r.link}','_blank')"`:'disabled'}>Rezept ansehen</button>
     `;
     liste.appendChild(div);
   });
 }
 
-function sucheBackrezepte(){ renderBackrezepte(document.getElementById("backrezepteSuche").value); }
+function sucheBackrezepte() {
+  const wert = document.getElementById("backrezepteSuche").value;
+  renderBackrezepte(wert);
+}
 
-function speicherListe(){ localStorage.setItem("einkaufsliste",JSON.stringify(einkaufsliste)); }
+function speicherListe() {
+  localStorage.setItem("einkaufsliste", JSON.stringify(einkaufsliste));
+}
 
-// --- Init ---
+// Init
 zeigeSeite("zufall");
 ladeRezepte();
 </script>
