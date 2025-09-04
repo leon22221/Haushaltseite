@@ -15,6 +15,12 @@ main { padding: 15px; max-width: 1000px; margin: auto; }
 .card h3 { margin-top: 0; font-size: 26px; font-weight: bold; color: #333; }
 .card p { font-size: 18px; margin: 5px 0 10px 0; color: #333; }
 .zutaten-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ddd; font-size: 18px; color: #333; }
+  .zutaten-item span.preis {
+  margin-right: 15px;
+  font-weight: bold;
+  min-width: 70px;
+  text-align: right;
+}
 .zutaten-item span { display: inline-block; }
 .zutaten-item .preis { margin-left: auto; margin-right: 15px; min-width: 60px; text-align: right; }
 input, textarea { width: 100%; padding: 16px; margin: 8px 0; font-size: 18px; border-radius: 6px; border: 1px solid #ccc; color: #333; }
@@ -164,11 +170,10 @@ function removeFromListByName(name, einheit) {
 function getPreis(name, menge, einheit) {
   if (!window.zutatPreise) return null;
 
-  // Alle Keys klein machen
   const lowerName = name.toLowerCase();
   let eintrag = null;
 
-  // Key direkt suchen
+  // Direktes Matching
   for (const key in zutatPreise) {
     if (key.toLowerCase() === lowerName) {
       eintrag = zutatPreise[key];
@@ -176,25 +181,15 @@ function getPreis(name, menge, einheit) {
     }
   }
 
-  // Wenn nicht gefunden, einfache Pluralformen entfernen
-  if (!eintrag) {
-    if (lowerName.endsWith("en")) {
-      for (const key in zutatPreise) {
-        if (key.toLowerCase() === lowerName.slice(0,-2)) {
-          eintrag = zutatPreise[key];
-          break;
-        }
-      }
+  // Pluralformen prüfen
+  if (!eintrag && lowerName.endsWith("en")) {
+    for (const key in zutatPreise) {
+      if (key.toLowerCase() === lowerName.slice(0,-2)) { eintrag = zutatPreise[key]; break; }
     }
   }
-  if (!eintrag) {
-    if (lowerName.endsWith("e")) {
-      for (const key in zutatPreise) {
-        if (key.toLowerCase() === lowerName.slice(0,-1)) {
-          eintrag = zutatPreise[key];
-          break;
-        }
-      }
+  if (!eintrag && lowerName.endsWith("e")) {
+    for (const key in zutatPreise) {
+      if (key.toLowerCase() === lowerName.slice(0,-1)) { eintrag = zutatPreise[key]; break; }
     }
   }
 
@@ -227,17 +222,24 @@ function renderListe() {
     else zusammenfassung[key]=menge;
   });
   let gesamtkosten=0;
-  Object.entries(zusammenfassung).forEach(([key, menge])=>{
-    let [name, einheit]=key.split('|');
-    let anzeige = einheit==='x'?`${menge}x ${name}`:`${menge}${einheit} ${name}`;
-    let kosten=getPreis(name, menge, einheit);
-    let preisText=kosten!=null?`${kosten.toFixed(2)} €`:"";
-    if(kosten!=null) gesamtkosten+=kosten;
-    const item=document.createElement("div");
-    item.className="zutaten-item";
-    item.innerHTML=`<span>${anzeige}</span><span class="preis">${preisText}</span><button class='remove-btn' onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>`;
-    div.appendChild(item);
-  });
+Object.entries(zusammenfassung).forEach(([key, menge]) => {
+  let [name, einheit] = key.split('|');
+  let anzeige = einheit === 'x' ? `${menge}x ${name}` : `${menge}${einheit} ${name}`;
+
+  let kosten = getPreis(name, menge, einheit);
+  let preisText = kosten != null ? `${kosten.toFixed(2)} €` : "";
+
+  if (kosten != null) gesamtkosten += kosten;
+
+  const item = document.createElement("div");
+  item.className = "zutaten-item";
+  item.innerHTML = `
+    <span>${anzeige}</span>
+    <span class="preis">${preisText}</span>
+    <button class='remove-btn' onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>
+  `;
+  div.appendChild(item);
+});
   const summeDiv=document.createElement("div");
   summeDiv.className="zutaten-item";
   summeDiv.innerHTML=`<strong>Gesamtkosten: ${gesamtkosten.toFixed(2)} €</strong>`;
