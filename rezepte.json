@@ -10,21 +10,21 @@
     "id": 2,
     "name": "Spaghetti Carbonara",
     "kategorie": "selbstgemacht",
-    "zutaten": ["500g Nudeln", "200g Speck", "3 Eier", "160g Parmesan"],
+    "zutaten": ["500g Nudeln", "200g Speck", "3x Eier", "160g Parmesan"],
     "link": "https://www.chefkoch.de/rezepte/1298241234947062/Carbonara-wie-bei-der-Mamma-in-Rom.html"
   },
   {
     "id": 3,
     "name": "Auflauf nach Vadders-Art (2 Tage)",
     "kategorie": "selbstgemacht",
-    "zutaten": ["1kg Nudeln", "1x Packung FleischWURST", "1x Packung Käse (gerieben)", "1x Brokkoli"],
+    "zutaten": ["1kg Nudeln", "1x FleischWURST", "1x Käse (gerieben)", "1x Brokkoli"],
     "link": ""
   },
   {
     "id": 4,
     "name": "Burger",
     "kategorie": "schnell",
-    "zutaten": ["1x Packung Burger Buns", "500g Hackfleisch"],
+    "zutaten": ["1x Burger Buns", "500g Hackfleisch"],
     "link": ""
   },
   {
@@ -45,7 +45,7 @@
     "id": 7,
     "name": "Wraps mit Hähnchen & Salat",
     "kategorie": "schnell",
-    "zutaten": ["1x Packung Wraps", "1x Kopfsalat", "200g Hähnchen"],
+    "zutaten": ["1x Wraps", "1x Kopfsalat", "200g Hähnchen"],
     "link": ""
   },
   {
