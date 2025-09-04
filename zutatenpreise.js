@@ -1,7 +1,7 @@
 // zutatenpreise.js
 // Preisangaben pro 100g/ml oder pro Stück (Basispreise)
 // Diese Datei kann beliebig erweitert werden
-const zutatPreise = {
+var zutatPreise = {
   "Mehl": { menge: 100, einheit: "g", preis: 0.20, gruppe: "Getreide" },
   "Dinkelmehl": { menge: 100, einheit: "g", preis: 0.25, gruppe: "Getreide" },
   "Milch": { menge: 1000, einheit: "ml", preis: 0.90, gruppe: "Milchprodukte" },
