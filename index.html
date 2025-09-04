@@ -163,23 +163,58 @@ function removeFromListByName(name, einheit) {
 
 function getPreis(name, menge, einheit) {
   if (!window.zutatPreise) return null;
-  let key = name.toLowerCase();
-  let eintrag = zutatPreise[key] || zutatPreise[key.charAt(0).toUpperCase() + key.slice(1)];
-  if(!eintrag) {
-    if(key.endsWith("en")) eintrag=zutatPreise[key.slice(0,-2)];
-    if(!eintrag && key.endsWith("e")) eintrag=zutatPreise[key.slice(0,-1)];
+
+  // Alle Keys klein machen
+  const lowerName = name.toLowerCase();
+  let eintrag = null;
+
+  // Key direkt suchen
+  for (const key in zutatPreise) {
+    if (key.toLowerCase() === lowerName) {
+      eintrag = zutatPreise[key];
+      break;
+    }
   }
-  if(!eintrag) return null;
+
+  // Wenn nicht gefunden, einfache Pluralformen entfernen
+  if (!eintrag) {
+    if (lowerName.endsWith("en")) {
+      for (const key in zutatPreise) {
+        if (key.toLowerCase() === lowerName.slice(0,-2)) {
+          eintrag = zutatPreise[key];
+          break;
+        }
+      }
+    }
+  }
+  if (!eintrag) {
+    if (lowerName.endsWith("e")) {
+      for (const key in zutatPreise) {
+        if (key.toLowerCase() === lowerName.slice(0,-1)) {
+          eintrag = zutatPreise[key];
+          break;
+        }
+      }
+    }
+  }
+
+  if (!eintrag) return null;
+
+  // Faktor berechnen
   let faktor;
-  if(eintrag.einheit.toLowerCase()===einheit.toLowerCase()) faktor=menge/eintrag.menge;
-  else if(eintrag.einheit==="g" && einheit==="kg") faktor=(menge*1000)/eintrag.menge;
-  else if(eintrag.einheit==="kg" && einheit==="g") faktor=(menge/1000)/eintrag.menge;
-  else if(eintrag.einheit==="ml" && einheit==="l") faktor=(menge*1000)/eintrag.menge;
-  else if(eintrag.einheit==="l" && einheit==="ml") faktor=(menge/1000)/eintrag.menge;
-  else if(eintrag.einheit==="x" && einheit==="x") faktor=menge/eintrag.menge;
+  const einheitLower = einheit.toLowerCase();
+  const basisEinheit = eintrag.einheit.toLowerCase();
+  if (basisEinheit === einheitLower) faktor = menge / eintrag.menge;
+  else if (basisEinheit==="g" && einheitLower==="kg") faktor=(menge*1000)/eintrag.menge;
+  else if (basisEinheit==="kg" && einheitLower==="g") faktor=(menge/1000)/eintrag.menge;
+  else if (basisEinheit==="ml" && einheitLower==="l") faktor=(menge*1000)/eintrag.menge;
+  else if (basisEinheit==="l" && einheitLower==="ml") faktor=(menge/1000)/eintrag.menge;
+  else if (basisEinheit==="x" && einheitLower==="x") faktor = menge / eintrag.menge;
   else return null;
-  return eintrag.preis*faktor;
+
+  return eintrag.preis * faktor;
 }
+
 
 function renderListe() {
   const div = document.getElementById("einkaufsliste");
