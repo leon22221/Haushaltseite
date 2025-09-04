@@ -179,20 +179,19 @@ function removeFromListByName(name, einheit) {
 function getPreis(name, menge, einheit) {
   if (!window.zutatPreise) return null;
 
-  // Name vereinheitlichen (erste Buchstabe groß, Rest klein)
+  // Key vereinheitlichen (Groß-/Kleinschreibung)
   let key = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-
   let eintrag = zutatPreise[key];
-  if (!eintrag) {
-    // versuche Plural-Singular (z.B. "Tomaten" → "Tomate")
-    if (key.endsWith("en")) eintrag = zutatPreise[key.slice(0, -2)];
-    if (key.endsWith("e")) eintrag = zutatPreise[key.slice(0, -1)];
-  }
 
+  if (!eintrag) {
+    // einfache Plural/Singular-Erkennung
+    if (key.endsWith("en")) eintrag = zutatPreise[key.slice(0, -2)];
+    if (!eintrag && key.endsWith("e")) eintrag = zutatPreise[key.slice(0, -1)];
+  }
   if (!eintrag) return null;
 
-  // Mengenberechnung
-  let faktor = 1;
+  // Umrechnung nach Einheit
+  let faktor;
   if (eintrag.einheit.toLowerCase() === einheit.toLowerCase()) {
     faktor = menge / eintrag.menge;
   } else if (eintrag.einheit === "g" && einheit === "kg") {
@@ -206,20 +205,18 @@ function getPreis(name, menge, einheit) {
   } else if (eintrag.einheit === "x" && einheit === "x") {
     faktor = menge / eintrag.menge;
   } else {
-    // Einheiten passen nicht zusammen → kein Preis
-    return null;
+    return null; // Einheiten nicht kompatibel
   }
 
   return eintrag.preis * faktor;
 }
 
-
 function renderListe() {
   const div = document.getElementById("einkaufsliste");
   div.innerHTML = "<h3>Einkaufsliste</h3>";
   let zusammenfassung = {};
-  
-  // Zutaten sammeln und Mengen addieren
+
+  // Zutaten zusammenfassen
   einkaufsliste.forEach(z => {
     const {name, menge, einheit} = parseZutat(z);
     const key = name.toLowerCase() + '|' + einheit;
@@ -229,26 +226,26 @@ function renderListe() {
 
   let gesamtkosten = 0;
 
+  // Ausgabe
   Object.entries(zusammenfassung).forEach(([key, menge]) => {
     let [name, einheit] = key.split('|');
     let anzeige = einheit === 'x' ? `${menge}x ${name}` : `${menge}${einheit} ${name}`;
-    
-    // Preis berechnen
+
     let kosten = getPreis(name, menge, einheit);
-    let preisText = "";
-    if (kosten != null) {
-      gesamtkosten += kosten;
-      preisText = ` - ${kosten.toFixed(2)} €`;
-    }
+    let preisText = kosten != null ? `${kosten.toFixed(2)} €` : "";
+
+    if (kosten != null) gesamtkosten += kosten;
 
     const item = document.createElement("div");
     item.className = "zutaten-item";
-    item.innerHTML = `<span>${anzeige}${preisText}</span>
+    item.innerHTML = `
+      <span>${anzeige}</span>
+      <span style="margin-left:auto; margin-right:20px;">${preisText}</span>
       <button class='remove-btn' onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>`;
     div.appendChild(item);
   });
 
-  // Gesamtsumme anzeigen
+  // Gesamtsumme unten
   if (gesamtkosten > 0) {
     const summeDiv = document.createElement("div");
     summeDiv.className = "zutaten-item";
