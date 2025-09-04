@@ -170,26 +170,14 @@ function removeFromListByName(name, einheit) {
 function getPreis(name, menge, einheit) {
   if (!window.zutatPreise) return null;
 
-  const lowerName = name.toLowerCase();
-  let eintrag = null;
+  const cleanName = name.trim().toLowerCase();
 
-  // Direktes Matching
+  // Suche passenden Eintrag in zutatPreise
+  let eintrag = null;
   for (const key in zutatPreise) {
-    if (key.toLowerCase() === lowerName) {
+    if (key.toLowerCase() === cleanName) {
       eintrag = zutatPreise[key];
       break;
-    }
-  }
-
-  // Pluralformen prüfen
-  if (!eintrag && lowerName.endsWith("en")) {
-    for (const key in zutatPreise) {
-      if (key.toLowerCase() === lowerName.slice(0,-2)) { eintrag = zutatPreise[key]; break; }
-    }
-  }
-  if (!eintrag && lowerName.endsWith("e")) {
-    for (const key in zutatPreise) {
-      if (key.toLowerCase() === lowerName.slice(0,-1)) { eintrag = zutatPreise[key]; break; }
     }
   }
 
@@ -197,54 +185,63 @@ function getPreis(name, menge, einheit) {
 
   // Faktor berechnen
   let faktor;
-  const einheitLower = einheit.toLowerCase();
-  const basisEinheit = eintrag.einheit.toLowerCase();
-  if (basisEinheit === einheitLower) faktor = menge / eintrag.menge;
-  else if (basisEinheit==="g" && einheitLower==="kg") faktor=(menge*1000)/eintrag.menge;
-  else if (basisEinheit==="kg" && einheitLower==="g") faktor=(menge/1000)/eintrag.menge;
-  else if (basisEinheit==="ml" && einheitLower==="l") faktor=(menge*1000)/eintrag.menge;
-  else if (basisEinheit==="l" && einheitLower==="ml") faktor=(menge/1000)/eintrag.menge;
-  else if (basisEinheit==="x" && einheitLower==="x") faktor = menge / eintrag.menge;
+  const e = einheit.toLowerCase();
+  const be = eintrag.einheit.toLowerCase();
+
+  if (be === e) faktor = menge / eintrag.menge;
+  else if (be === "g" && e === "kg") faktor = (menge*1000)/eintrag.menge;
+  else if (be === "kg" && e === "g") faktor = (menge/1000)/eintrag.menge;
+  else if (be === "ml" && e === "l") faktor = (menge*1000)/eintrag.menge;
+  else if (be === "l" && e === "ml") faktor = (menge/1000)/eintrag.menge;
+  else if (be === "x" && e === "x") faktor = menge / eintrag.menge;
   else return null;
 
   return eintrag.preis * faktor;
 }
 
 
+
 function renderListe() {
   const div = document.getElementById("einkaufsliste");
-  div.innerHTML="<h3>Einkaufsliste</h3>";
-  let zusammenfassung={};
-  einkaufsliste.forEach(z=>{
-    const {name, menge, einheit}=parseZutat(z);
-    const key=name.toLowerCase()+'|'+einheit;
-    if(zusammenfassung[key]) zusammenfassung[key]+=menge;
-    else zusammenfassung[key]=menge;
+  div.innerHTML = "<h3>Einkaufsliste</h3>";
+
+  let zusammenfassung = {};
+  einkaufsliste.forEach(z => {
+    const {name, menge, einheit} = parseZutat(z);
+    const key = name.toLowerCase() + "|" + einheit;
+    if(zusammenfassung[key]) zusammenfassung[key] += menge;
+    else zusammenfassung[key] = menge;
   });
-  let gesamtkosten=0;
-Object.entries(zusammenfassung).forEach(([key, menge]) => {
-  let [name, einheit] = key.split('|');
-  let anzeige = einheit === 'x' ? `${menge}x ${name}` : `${menge}${einheit} ${name}`;
 
-  let kosten = getPreis(name, menge, einheit);
-  let preisText = kosten != null ? `${kosten.toFixed(2)} €` : "";
+  let gesamtkosten = 0;
 
-  if (kosten != null) gesamtkosten += kosten;
+  Object.entries(zusammenfassung).forEach(([key, menge]) => {
+    let [name, einheit] = key.split('|');
+    let anzeige = einheit === 'x' ? `${menge}x ${name}` : `${menge}${einheit} ${name}`;
 
-  const item = document.createElement("div");
-  item.className = "zutaten-item";
-  item.innerHTML = `
-    <span>${anzeige}</span>
-    <span class="preis">${preisText}</span>
-    <button class='remove-btn' onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>
-  `;
-  div.appendChild(item);
-});
-  const summeDiv=document.createElement("div");
-  summeDiv.className="zutaten-item";
-  summeDiv.innerHTML=`<strong>Gesamtkosten: ${gesamtkosten.toFixed(2)} €</strong>`;
+    // Preis abrufen
+    let preis = getPreis(name, menge, einheit);
+    let preisText = preis != null ? `${preis.toFixed(2)} €` : "0,00 €";
+
+    if(preis != null) gesamtkosten += preis;
+
+    const item = document.createElement("div");
+    item.className = "zutaten-item";
+    item.innerHTML = `
+      <span>${anzeige}</span>
+      <span class="preis">${preisText}</span>
+      <button class='remove-btn' onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>
+    `;
+    div.appendChild(item);
+  });
+
+  // Gesamtkosten anzeigen
+  const summeDiv = document.createElement("div");
+  summeDiv.className = "zutaten-item";
+  summeDiv.innerHTML = `<strong>Gesamtkosten: ${gesamtkosten.toFixed(2)} €</strong>`;
   div.appendChild(summeDiv);
 }
+
 
 // Zufallsrezept
 function zeigeZufallsrezept() {
