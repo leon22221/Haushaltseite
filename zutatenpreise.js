@@ -10,7 +10,7 @@ var zutatPreise = {
   "Kartoffel": { menge: 100, einheit: "g", preis: 0.12, gruppe: "Gemüse" },
   "Apfel": { menge: 100, einheit: "g", preis: 0.20, gruppe: "Obst" },
   "Karotte": { menge: 100, einheit: "g", preis: 0.15, gruppe: "Gemüse" },
-  "Zwiebeln": { menge: 100, einheit: "g", preis: 0.10, gruppe: "Gemüse" },
+  "Zwiebeln": { menge: 1, einheit: "x", preis: 0.05, gruppe: "Gemüse" },
   "Brokkoli": { menge: 1, einheit: "x", preis: 1.30, gruppe: "Gemüse" },
   "Knoblauch": { menge: 10, einheit: "g", preis: 0.08, gruppe: "Gewürze" },
   "Olivenöl": { menge: 100, einheit: "ml", preis: 0.60, gruppe: "Fette & Öle" },
