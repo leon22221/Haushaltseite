@@ -90,7 +90,7 @@
   </div>
 </section>
 </main>
-
+<script src="zutatenpreise.js"></script>
 <script>
 let rezepte = [];
 let backrezepte = [];
@@ -176,6 +176,12 @@ function removeFromListByName(name, einheit) {
   renderListe();
 }
 
+    function getPreis(name) {
+  if (!window.zutatenPreise) return null;
+  let key = name.toLowerCase().trim();
+  return zutatenPreise[key] ?? null;
+}
+
 function renderListe() {
   const div = document.getElementById("einkaufsliste");
   div.innerHTML = "<h3>Einkaufsliste</h3>";
@@ -186,14 +192,35 @@ function renderListe() {
     if(zusammenfassung[key]) zusammenfassung[key] += menge;
     else zusammenfassung[key] = menge;
   });
+
+  let gesamtkosten = 0;
+
   Object.entries(zusammenfassung).forEach(([key, menge]) => {
     let [name, einheit] = key.split('|');
     let anzeige = einheit === 'x' ? `${menge}x ${name}` : `${menge}${einheit} ${name}`;
+    
+    // Preis berechnen
+    let preisProEinheit = getPreis(name);
+    let preisText = "";
+    if (preisProEinheit != null) {
+      let kosten = (menge * preisProEinheit);
+      gesamtkosten += kosten;
+      preisText = ` - ${kosten.toFixed(2)} €`;
+    }
+
     const item = document.createElement("div");
     item.className="zutaten-item";
-    item.innerHTML = `<span>${anzeige}</span><button class='remove-btn' onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>`;
+    item.innerHTML = `<span>${anzeige}${preisText}</span>
+      <button class='remove-btn' onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>`;
     div.appendChild(item);
   });
+
+  if (gesamtkosten > 0) {
+    const summeDiv = document.createElement("div");
+    summeDiv.className = "zutaten-item";
+    summeDiv.innerHTML = `<strong>Gesamtkosten: ${gesamtkosten.toFixed(2)} €</strong>`;
+    div.appendChild(summeDiv);
+  }
 }
 
 function zeigeZufallsrezept() {
