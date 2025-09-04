@@ -118,21 +118,23 @@ async function ladeRezepte() {
 
 function parseZutat(zutat) {
   zutat = zutat.trim();
+  
   // Form: 1x Name
-  let matchX = zutat.match(/^([0-9]+)x\s+(.+)$/i);
+  let matchX = zutat.match(/^([0-9]+)\s*x\s*(.+)$/i);
   if (matchX) return { menge: parseInt(matchX[1]), einheit: "x", name: matchX[2].trim() };
 
-  // Form: Menge + Einheit + Name (z.B. 500g Nudeln)
-  const match = zutat.match(/^([0-9,.]+)?\s*(g|kg|ml|l)?\s*(.+)$/i);
-  let menge = 1, einheit = "x", name = zutat;
-  if (match) {
-    menge = match[1] ? parseFloat(match[1].replace(",", ".")) : 1;
-    einheit = match[2] || "x";
-    name = match[3].trim() || zutat;
+  // Form: Menge + Einheit + Name (z.B. 500g Nudeln, 0,5kg Mehl, 200ml Milch)
+  let match = zutat.match(/^([0-9.,]+)?\s*(g|kg|ml|l)?\s*(.+)$/i);
+  if (!match) return { name: zutat, menge: 1, einheit: "x" };
 
-    if (einheit.toLowerCase() === "kg") { menge *= 1000; einheit = "g"; }
-    if (einheit.toLowerCase() === "l") { menge *= 1000; einheit = "ml"; }
-  }
+  let menge = match[1] ? parseFloat(match[1].replace(",", ".")) : 1;
+  let einheit = match[2] ? match[2].toLowerCase() : "x";
+  let name = match[3].trim();
+
+  // Einheiten normalisieren
+  if (einheit === "kg") { menge *= 1000; einheit = "g"; }
+  if (einheit === "l")  { menge *= 1000; einheit = "ml"; }
+
   return { name, menge, einheit };
 }
   
@@ -177,32 +179,30 @@ function getPreis(name, menge, einheit) {
   const lowerName = name.toLowerCase();
   let eintrag = null;
 
-  // Direktes Matching
+  // Key-Matching unabhängig von Groß-/Kleinschreibung
   for (const key in zutatPreise) {
     if (key.toLowerCase() === lowerName) {
       eintrag = zutatPreise[key];
       break;
     }
   }
-
   if (!eintrag) return null;
 
-  // Faktor berechnen
   const e = einheit.toLowerCase();
   const be = eintrag.einheit.toLowerCase();
   let faktor;
 
+  // Mengen an Basis-Menge anpassen
   if (be === e) faktor = menge / eintrag.menge;
-  else if (be === "g" && e === "kg") faktor = (menge*1000)/eintrag.menge;
-  else if (be === "kg" && e === "g") faktor = (menge/1000)/eintrag.menge;
-  else if (be === "ml" && e === "l") faktor = (menge*1000)/eintrag.menge;
-  else if (be === "l" && e === "ml") faktor = (menge/1000)/eintrag.menge;
+  else if (be === "g" && e === "kg") faktor = (menge * 1000) / eintrag.menge;
+  else if (be === "kg" && e === "g") faktor = (menge / 1000) / eintrag.menge;
+  else if (be === "ml" && e === "l") faktor = (menge * 1000) / eintrag.menge;
+  else if (be === "l" && e === "ml") faktor = (menge / 1000) / eintrag.menge;
   else if (be === "x" && e === "x") faktor = menge / eintrag.menge;
-  else return null;
+  else return null; // nicht kompatibel
 
   return eintrag.preis * faktor;
 }
-
 
 
 
