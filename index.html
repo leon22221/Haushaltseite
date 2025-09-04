@@ -176,20 +176,54 @@ function removeFromListByName(name, einheit) {
   renderListe();
 }
 
-    function getPreis(name) {
-  if (!window.zutatenPreise) return null;
-  let key = name.toLowerCase().trim();
-  return zutatenPreise[key] ?? null;
+function getPreis(name, menge, einheit) {
+  if (!window.zutatPreise) return null;
+
+  // Name vereinheitlichen (erste Buchstabe groß, Rest klein)
+  let key = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+
+  let eintrag = zutatPreise[key];
+  if (!eintrag) {
+    // versuche Plural-Singular (z.B. "Tomaten" → "Tomate")
+    if (key.endsWith("en")) eintrag = zutatPreise[key.slice(0, -2)];
+    if (key.endsWith("e")) eintrag = zutatPreise[key.slice(0, -1)];
+  }
+
+  if (!eintrag) return null;
+
+  // Mengenberechnung
+  let faktor = 1;
+  if (eintrag.einheit.toLowerCase() === einheit.toLowerCase()) {
+    faktor = menge / eintrag.menge;
+  } else if (eintrag.einheit === "g" && einheit === "kg") {
+    faktor = (menge * 1000) / eintrag.menge;
+  } else if (eintrag.einheit === "kg" && einheit === "g") {
+    faktor = (menge / 1000) / eintrag.menge;
+  } else if (eintrag.einheit === "ml" && einheit === "l") {
+    faktor = (menge * 1000) / eintrag.menge;
+  } else if (eintrag.einheit === "l" && einheit === "ml") {
+    faktor = (menge / 1000) / eintrag.menge;
+  } else if (eintrag.einheit === "x" && einheit === "x") {
+    faktor = menge / eintrag.menge;
+  } else {
+    // Einheiten passen nicht zusammen → kein Preis
+    return null;
+  }
+
+  return eintrag.preis * faktor;
 }
+
 
 function renderListe() {
   const div = document.getElementById("einkaufsliste");
   div.innerHTML = "<h3>Einkaufsliste</h3>";
   let zusammenfassung = {};
+  
+  // Zutaten sammeln und Mengen addieren
   einkaufsliste.forEach(z => {
     const {name, menge, einheit} = parseZutat(z);
     const key = name.toLowerCase() + '|' + einheit;
-    if(zusammenfassung[key]) zusammenfassung[key] += menge;
+    if (zusammenfassung[key]) zusammenfassung[key] += menge;
     else zusammenfassung[key] = menge;
   });
 
@@ -200,21 +234,21 @@ function renderListe() {
     let anzeige = einheit === 'x' ? `${menge}x ${name}` : `${menge}${einheit} ${name}`;
     
     // Preis berechnen
-    let preisProEinheit = getPreis(name);
+    let kosten = getPreis(name, menge, einheit);
     let preisText = "";
-    if (preisProEinheit != null) {
-      let kosten = (menge * preisProEinheit);
+    if (kosten != null) {
       gesamtkosten += kosten;
       preisText = ` - ${kosten.toFixed(2)} €`;
     }
 
     const item = document.createElement("div");
-    item.className="zutaten-item";
+    item.className = "zutaten-item";
     item.innerHTML = `<span>${anzeige}${preisText}</span>
       <button class='remove-btn' onclick="removeFromListByName('${name}','${einheit}')">Entfernen</button>`;
     div.appendChild(item);
   });
 
+  // Gesamtsumme anzeigen
   if (gesamtkosten > 0) {
     const summeDiv = document.createElement("div");
     summeDiv.className = "zutaten-item";
@@ -222,6 +256,7 @@ function renderListe() {
     div.appendChild(summeDiv);
   }
 }
+
 
 function zeigeZufallsrezept() {
   const alleRezepte = rezepte.concat(backrezepte);
