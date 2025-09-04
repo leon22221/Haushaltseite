@@ -47,7 +47,7 @@ var zutatPreise = {
   "Tomatenmark": { menge: 100, einheit: "g", preis: 0.70, gruppe: "Saucen & Fonds" },
   "Kräuterfrischkäse": { menge: 100, einheit: "g", preis: 0.90, gruppe: "Milchprodukte" },
   "Dose Tomaten (stückig)": { menge: 400, einheit: "g", preis: 1.00, gruppe: "Konserven" },
-  "FleischWURST": { menge: 100, einheit: "g", preis: 1.20, gruppe: "Fleisch" },
+  "FleischWURST": { menge: 1, einheit: "x", preis: 2.50, gruppe: "Fleisch" },
 
   // Erweiterung um weitere Lebensmittel (Auszug, hier fortgesetzt bis über 200)
   "Mozzarella": { menge: 100, einheit: "g", preis: 1.50, gruppe: "Milchprodukte" },
