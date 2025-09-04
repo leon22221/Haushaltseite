@@ -176,10 +176,10 @@ function removeFromListByName(name, einheit) {
 function getPreis(name, menge, einheit) {
   if (!window.zutatPreise) return null;
 
-  let lowerName = name.toLowerCase();
+  const lowerName = name.toLowerCase();
   let eintrag = null;
 
-  // Key-Matching case-insensitive
+  // Key-Matching unabhängig von Groß-/Kleinschreibung
   for (const key in zutatPreise) {
     if (key.toLowerCase() === lowerName) {
       eintrag = zutatPreise[key];
@@ -202,7 +202,6 @@ function getPreis(name, menge, einheit) {
 
   return eintrag.preis * faktor;
 }
-
 
 
 function renderListe() {
