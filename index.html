@@ -118,18 +118,18 @@ async function ladeRezepte() {
 
 function parseZutat(zutat) {
   zutat = zutat.trim();
-  
+
   // Form: 1x Name
   let matchX = zutat.match(/^([0-9]+)\s*x\s*(.+)$/i);
-  if (matchX) return { menge: parseInt(matchX[1]), einheit: "x", name: matchX[2].trim() };
+  if (matchX) return { menge: parseInt(matchX[1]), einheit: "x", name: matchX[2].trim().toLowerCase() };
 
   // Form: Menge + Einheit + Name (z.B. 500g Nudeln, 0,5kg Mehl, 200ml Milch)
   let match = zutat.match(/^([0-9.,]+)?\s*(g|kg|ml|l)?\s*(.+)$/i);
-  if (!match) return { name: zutat, menge: 1, einheit: "x" };
+  if (!match) return { name: zutat.toLowerCase(), menge: 1, einheit: "x" };
 
   let menge = match[1] ? parseFloat(match[1].replace(",", ".")) : 1;
   let einheit = match[2] ? match[2].toLowerCase() : "x";
-  let name = match[3].trim();
+  let name = match[3].trim().toLowerCase();
 
   // Einheiten normalisieren
   if (einheit === "kg") { menge *= 1000; einheit = "g"; }
@@ -176,10 +176,10 @@ function removeFromListByName(name, einheit) {
 function getPreis(name, menge, einheit) {
   if (!window.zutatPreise) return null;
 
-  const lowerName = name.toLowerCase();
+  let lowerName = name.toLowerCase();
   let eintrag = null;
 
-  // Key-Matching unabhängig von Groß-/Kleinschreibung
+  // Key-Matching case-insensitive
   for (const key in zutatPreise) {
     if (key.toLowerCase() === lowerName) {
       eintrag = zutatPreise[key];
@@ -192,14 +192,13 @@ function getPreis(name, menge, einheit) {
   const be = eintrag.einheit.toLowerCase();
   let faktor;
 
-  // Mengen an Basis-Menge anpassen
   if (be === e) faktor = menge / eintrag.menge;
   else if (be === "g" && e === "kg") faktor = (menge * 1000) / eintrag.menge;
   else if (be === "kg" && e === "g") faktor = (menge / 1000) / eintrag.menge;
   else if (be === "ml" && e === "l") faktor = (menge * 1000) / eintrag.menge;
   else if (be === "l" && e === "ml") faktor = (menge / 1000) / eintrag.menge;
   else if (be === "x" && e === "x") faktor = menge / eintrag.menge;
-  else return null; // nicht kompatibel
+  else return null;
 
   return eintrag.preis * faktor;
 }
@@ -213,7 +212,7 @@ function renderListe() {
   let zusammenfassung = {};
   einkaufsliste.forEach(z => {
     const {name, menge, einheit} = parseZutat(z);
-    const key = name.toLowerCase() + "|" + einheit;
+    const key = name + "|" + einheit;
     if(zusammenfassung[key]) zusammenfassung[key] += menge;
     else zusammenfassung[key] = menge;
   });
