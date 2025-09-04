@@ -117,21 +117,25 @@ async function ladeRezepte() {
 }
 
 function parseZutat(zutat) {
+  zutat = zutat.trim();
+  // Form: 1x Name
   let matchX = zutat.match(/^([0-9]+)x\s+(.+)$/i);
   if (matchX) return { menge: parseInt(matchX[1]), einheit: "x", name: matchX[2].trim() };
-  const match = zutat.match(/^([0-9,.]+)?\s*(g|kg|ml|l)?\s*(.*)$/i);
-  let menge = 1, einheit = "x", name = zutat.trim();
+
+  // Form: Menge + Einheit + Name (z.B. 500g Nudeln)
+  const match = zutat.match(/^([0-9,.]+)?\s*(g|kg|ml|l)?\s*(.+)$/i);
+  let menge = 1, einheit = "x", name = zutat;
   if (match) {
     menge = match[1] ? parseFloat(match[1].replace(",", ".")) : 1;
     einheit = match[2] || "x";
     name = match[3].trim() || zutat;
+
     if (einheit.toLowerCase() === "kg") { menge *= 1000; einheit = "g"; }
     if (einheit.toLowerCase() === "l") { menge *= 1000; einheit = "ml"; }
   }
-  if ((match && match[1]) && (!match[2] || match[2]==="")) einheit="x";
   return { name, menge, einheit };
 }
-
+  
 function addToList(index, typ="rezepte", button=null) {
   const quelle = typ==="rezepte"?rezepte:backrezepte;
   quelle[index].zutaten.forEach(z=>einkaufsliste.push(z));
@@ -170,12 +174,12 @@ function removeFromListByName(name, einheit) {
 function getPreis(name, menge, einheit) {
   if (!window.zutatPreise) return null;
 
-  const cleanName = name.trim().toLowerCase();
-
-  // Suche passenden Eintrag in zutatPreise
+  const lowerName = name.toLowerCase();
   let eintrag = null;
+
+  // Direktes Matching
   for (const key in zutatPreise) {
-    if (key.toLowerCase() === cleanName) {
+    if (key.toLowerCase() === lowerName) {
       eintrag = zutatPreise[key];
       break;
     }
@@ -184,9 +188,9 @@ function getPreis(name, menge, einheit) {
   if (!eintrag) return null;
 
   // Faktor berechnen
-  let faktor;
   const e = einheit.toLowerCase();
   const be = eintrag.einheit.toLowerCase();
+  let faktor;
 
   if (be === e) faktor = menge / eintrag.menge;
   else if (be === "g" && e === "kg") faktor = (menge*1000)/eintrag.menge;
@@ -198,6 +202,7 @@ function getPreis(name, menge, einheit) {
 
   return eintrag.preis * faktor;
 }
+
 
 
 
@@ -219,11 +224,10 @@ function renderListe() {
     let [name, einheit] = key.split('|');
     let anzeige = einheit === 'x' ? `${menge}x ${name}` : `${menge}${einheit} ${name}`;
 
-    // Preis abrufen
-    let preis = getPreis(name, menge, einheit);
-    let preisText = preis != null ? `${preis.toFixed(2)} €` : "0,00 €";
+    let kosten = getPreis(name, menge, einheit);
+    let preisText = kosten != null ? `${kosten.toFixed(2)} €` : "0,00 €";
 
-    if(preis != null) gesamtkosten += preis;
+    if (kosten != null) gesamtkosten += kosten;
 
     const item = document.createElement("div");
     item.className = "zutaten-item";
@@ -235,7 +239,6 @@ function renderListe() {
     div.appendChild(item);
   });
 
-  // Gesamtkosten anzeigen
   const summeDiv = document.createElement("div");
   summeDiv.className = "zutaten-item";
   summeDiv.innerHTML = `<strong>Gesamtkosten: ${gesamtkosten.toFixed(2)} €</strong>`;
